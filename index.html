@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 10 Meeting — EOS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" async></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f0f1f6; color: #1a1a2e; min-height: 100vh; }
+
+  /* ── Header ── */
+  .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 24px 32px; color: #fff; }
+  .header-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .header h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+  .header .subtitle { font-size: 14px; opacity: 0.7; margin-top: 4px; }
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+
+  .btn-start { background: #27ae60; border: none; border-radius: 10px; padding: 12px 28px; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'DM Sans', sans-serif; letter-spacing: 0.5px; transition: background 0.2s; }
+  .btn-start:hover { background: #219a52; }
+
+  .timer-box { border-radius: 12px; padding: 10px 20px; min-width: 100px; text-align: center; transition: background 0.3s; }
+  .timer-box .time { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .timer-box .time-label { font-size: 10px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+
+  .timer-controls { display: flex; flex-direction: column; gap: 6px; }
+  .timer-controls button { border: none; border-radius: 8px; padding: 6px 14px; color: #fff; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-pause { background: rgba(255,255,255,0.2); font-size: 13px; font-weight: 600; }
+  .btn-reset { background: rgba(255,255,255,0.1); font-size: 11px; }
+
+  .btn-fs { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; line-height: 1; }
+  .btn-fs:hover { background: rgba(255,255,255,0.3); }
+
+  .progress-bar { margin-top: 16px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background 0.3s; }
+
+  /* ── Section Nav ── */
+  .section-nav { background: #fff; border-bottom: 1px solid #e4e5ec; padding: 0 16px; overflow-x: auto; white-space: nowrap; }
+  .section-nav-inner { display: flex; }
+  .nav-btn { padding: 14px 18px; border: none; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #8a8da8; border-bottom: 3px solid transparent; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .nav-btn.active { font-weight: 700; color: #1a1a2e; border-bottom-color: #1a1a2e; }
+  .nav-btn .icon { font-size: 16px; }
+  .nav-btn .mins { font-size: 10px; opacity: 0.6; }
+
+  /* ── Content ── */
+  .content-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 24px 80px; }
+  .content-card { background: #fff; border-radius: 14px; padding: 28px 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .content-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+  .content-header h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin: 0; }
+  .content-header .desc { color: #6b7094; font-size: 14px; margin-top: 4px; }
+  .btn-next { background: #1a1a2e; border: none; border-radius: 8px; padding: 8px 20px; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: background 0.2s; }
+  .btn-next:hover { background: #2a2a4e; }
+  .content-body { border-top: 1px solid #e8e9f0; padding-top: 20px; }
+
+  /* ── Form elements ── */
+  input[type="text"], input[type="date"], input[type="number"], textarea, select {
+    border: 1px solid #d0d3e0; border-radius: 6px; padding: 8px 10px; font-size: 14px;
+    font-family: 'DM Sans', sans-serif; outline: none; background: #fff; transition: border-color 0.2s; color: #1a1a2e;
+  }
+  input:focus, textarea:focus, select:focus { border-color: #4A6FA5; }
+  textarea { resize: vertical; line-height: 1.6; }
+
+  .row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e8e9f0; }
+  .row:last-of-type { border-bottom: none; }
+
+  .btn-del { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e0e0e0; background: #fff; color: #c0c0c0; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+  .btn-del:hover { border-color: #e74c3c; color: #e74c3c; }
+
+  .btn-add { background: transparent; border: 1px dashed #b0b4c8; border-radius: 8px; padding: 8px 16px; font-size: 13px; color: #6b7094; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 12px; transition: all 0.15s; }
+  .btn-add:hover { border-color: #6b7094; color: #1a1a2e; }
+
+  .btn-track { width: 36px; height: 36px; border-radius: 50%; border: none; color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+  .btn-check { width: 28px; height: 28px; border-radius: 6px; font-size: 14px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+
+  .tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { padding: 10px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7094; border-bottom: 2px solid #1a1a2e; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e8e9f0; }
+
+  /* ── Rating ── */
+  .rating-btn { width: 40px; height: 40px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.15s; }
+
+  /* ── Conclude recap ── */
+  .recap-box { background: #f5f6fa; border-radius: 8px; padding: 16px; margin-bottom: 24px; max-height: 150px; overflow: auto; }
+
+  /* ── IDS solution ── */
+  .solution-row { margin-top: 8px; margin-left: 62px; }
+  .btn-to-todo { border: none; border-radius: 8px; padding: 4px 12px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 6px; transition: all 0.15s; }
+
+  .btn-ids-push { border: 1px dashed #b0b4c8; border-radius: 8px; padding: 4px 8px; font-size: 11px; color: #6b7094; cursor: pointer; font-family: 'DM Sans', sans-serif; background: transparent; white-space: nowrap; }
+
+  /* ── Data Management ── */
+  .data-bar { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 32px; }
+  .btn-data { background: transparent; border: 1px solid #d0d3e0; border-radius: 6px; padding: 5px 12px; font-size: 11px; color: #6b7094; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+  .btn-data:hover { border-color: #6b7094; color: #1a1a2e; }
+  .btn-data.danger:hover { border-color: #e74c3c; color: #e74c3c; }
+
+  /* Hide sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Org Chart side panel ── */
+  .org-chart-area { display: flex; border: 1px solid #e8e9f0; border-radius: 10px; overflow: hidden; background: #fff; min-height: 380px; }
+  .org-chart-canvas { flex: 1; min-width: 0; overflow: auto; background: #fafbfd; padding: 10px; }
+  .org-panel { width: 320px; flex: 0 0 320px; background: #f8f9fc; border-left: 2px solid #e0e2ec; overflow-y: auto; animation: orgPanelSlideIn 200ms ease; display: flex; flex-direction: column; }
+  @keyframes orgPanelSlideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .org-panel-accent { height: 3px; background: #4A6FA5; flex-shrink: 0; }
+  .org-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 4px; }
+  .org-panel-header h3 { font-size: 11px; font-weight: 700; color: #6b7094; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+  .org-panel-body { padding: 10px 18px 20px; }
+  .panel-label { font-size: 11px; font-weight: 700; color: #6b7094; text-transform: uppercase; letter-spacing: 1px; display: block; margin: 14px 0 5px; }
+  .panel-label:first-child { margin-top: 4px; }
+  .panel-title-input { width: 100%; font-size: 18px; font-weight: 700; color: #1E2761; font-family: 'DM Sans', sans-serif; border: 1px solid transparent; background: transparent; padding: 8px 10px; border-radius: 6px; }
+  .panel-title-input:hover { border-color: #d0d3e0; background: #fff; }
+  .panel-title-input:focus { border-color: #4A6FA5; background: #fff; }
+  .panel-name-input { width: 100%; color: #4A6FA5; }
+  .org-panel-divider { border-top: 1px solid #e0e2ec; margin: 18px -18px 8px; }
+  .resp-row { display: flex; align-items: center; gap: 6px; padding: 4px 6px; margin: 0 -6px; border-radius: 6px; transition: background 0.15s; }
+  .resp-row:hover { background: #eef0f6; }
+  .resp-row input[type="text"] { flex: 1; font-size: 13px; background: transparent; border-color: transparent; }
+  .resp-row input[type="text"]:hover { border-color: #d0d3e0; background: #fff; }
+  .resp-row input[type="text"]:focus { border-color: #4A6FA5; background: #fff; }
+  .resp-del { width: 24px; height: 24px; border-radius: 4px; border: 1px solid transparent; background: transparent; color: #b0b4c8; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; line-height: 1; flex-shrink: 0; padding: 0; }
+  .resp-del:hover { border-color: #e74c3c; color: #e74c3c; background: #fff; }
+  .btn-add-resp { background: transparent; border: 1px dashed #b0b4c8; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #6b7094; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 10px; transition: all 0.15s; }
+  .btn-add-resp:hover { border-color: #6b7094; color: #1a1a2e; }
+  .btn-delete-position { width: 100%; background: #fff; border: 1px solid #e74c3c; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #e74c3c; cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif; margin-top: 8px; transition: background 0.15s; }
+  .btn-delete-position:hover { background: #e74c3c; color: #fff; }
+
+  /* ── VTO (Vision / Traction Organizer) ── */
+  .vto-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .vto-banner { text-align: center; color: #fff; font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 800; letter-spacing: 3px; padding: 18px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .vto-banner-vision { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+  .vto-banner-traction { background: linear-gradient(135deg, #27ae60 0%, #219a52 100%); }
+  .vto-card { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #eef0f6; }
+  .vto-card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .vto-num { width: 30px; height: 30px; border-radius: 50%; background: #1a1a2e; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; font-family: 'DM Sans', sans-serif; }
+  .vto-card-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #1a1a2e; margin: 0 0 2px; line-height: 1.2; }
+  .vto-helper { font-size: 13px; color: #6b7094; font-style: italic; }
+  .vto-field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6b7094; display: block; margin: 0 0 5px; }
+  .vto-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .vto-two-col { grid-template-columns: 1fr; } }
+  .vto-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .vto-row input[type="text"] { flex: 1; }
+  .vto-card textarea { width: 100%; min-height: 70px; }
+  .vto-card input[type="text"] { width: 100%; }
+
+  /* ── SharePoint integration ── */
+  .btn-signin { background: #fff; color: #1a1a2e; border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; white-space: nowrap; }
+  .btn-signin:hover { background: #e8e9f0; }
+  .btn-signin .ms-logo { display: inline-block; width: 14px; height: 14px; background: linear-gradient(90deg, #f25022 50%, #00a4ef 50%) 0 0 / 100% 50% no-repeat, linear-gradient(90deg, #7fba00 50%, #ffb900 50%) 0 100% / 100% 50% no-repeat; }
+  .user-block { display: none; align-items: center; gap: 10px; color: #fff; font-size: 13px; padding: 0 6px; }
+  .user-block .uname { font-weight: 600; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-block .btn-signout { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .user-block .btn-signout:hover { background: rgba(255,255,255,0.15); }
+  .btn-sync { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background 0.2s; min-width: 44px; position: relative; }
+  .btn-sync:hover { background: rgba(255,255,255,0.28); }
+  .btn-sync[data-state="gray"] { opacity: 0.75; }
+  .btn-sync[data-state="synced"] { color: #27ae60; background: #fff; border-color: #fff; }
+  .btn-sync[data-state="pending"] { color: #f39c12; background: #fff; border-color: #fff; }
+  .btn-sync.spin .sync-icon { display: inline-block; animation: btnSpin 1s linear infinite; }
+  @keyframes btnSpin { to { transform: rotate(360deg); } }
+  .sp-footer { position: fixed; bottom: 12px; left: 12px; z-index: 20; pointer-events: none; }
+  .sp-footer-badge { display: none; align-items: center; gap: 6px; background: rgba(255,255,255,0.96); border: 1px solid #cdd1e0; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: #4A6FA5; box-shadow: 0 2px 8px rgba(0,0,0,0.08); pointer-events: auto; }
+
+  /* Toasts */
+  #toastWrap { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast { background: #1a1a2e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); opacity: 0; transform: translateY(10px); transition: opacity 200ms ease, transform 200ms ease; max-width: 360px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.ok { background: #27ae60; }
+  .toast.error { background: #e74c3c; }
+
+  /* Modal */
+  .app-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9998; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .app-modal-inner { background: #fff; border-radius: 12px; max-width: 640px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.25); overflow: hidden; }
+  .app-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e8e9f0; flex-shrink: 0; }
+  .app-modal-header h3 { margin: 0; font-family: 'Playfair Display', serif; font-size: 20px; color: #1a1a2e; }
+  .app-modal-header .btn-close { border: none; background: transparent; font-size: 22px; color: #6b7094; cursor: pointer; line-height: 1; padding: 4px 8px; }
+  .app-modal-body { padding: 20px 24px; overflow: auto; }
+
+  .meeting-history-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .meeting-history-table th { padding: 10px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7094; border-bottom: 2px solid #1a1a2e; }
+  .meeting-history-table td { padding: 10px 12px; border-bottom: 1px solid #e8e9f0; }
+  .btn-history { background: transparent; border: 1px solid #d0d3e0; border-radius: 6px; padding: 6px 14px; font-size: 12px; color: #6b7094; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 12px; transition: all 0.15s; }
+  .btn-history:hover { border-color: #4A6FA5; color: #4A6FA5; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <h1>Level 10 Meeting</h1>
+      <div class="subtitle" id="meetingDate"></div>
+    </div>
+    <div class="header-actions">
+      <div id="startArea">
+        <button class="btn-start" id="btnStart" onclick="startMeeting()">▶ Start Meeting</button>
+      </div>
+      <div id="timerArea" style="display:none; align-items:center; gap:12px;">
+        <div class="timer-box" id="timerBox" style="background:rgba(255,255,255,0.15);">
+          <div class="time" id="timerDisplay">5:00</div>
+          <div class="time-label" id="timerLabel">REMAINING</div>
+        </div>
+        <div class="timer-controls">
+          <button class="btn-pause" id="btnPause" onclick="togglePause()">⏸ Pause</button>
+          <button class="btn-reset" onclick="resetTimer()">↺ Reset</button>
+        </div>
+      </div>
+      <button class="btn-signin" id="btnSignIn" onclick="signIn()" title="Sign in with Microsoft to sync with SharePoint">
+        <span class="ms-logo"></span>Sign In
+      </button>
+      <div class="user-block" id="userBlock">
+        <span class="uname" id="userName"></span>
+        <button type="button" class="btn-signout" onclick="signOut()">Sign Out</button>
+      </div>
+      <button class="btn-sync" id="btnSync" data-state="gray" onclick="syncNow()" title="Not signed in">
+        <span class="sync-icon">☁</span>
+      </button>
+      <button class="btn-fs" onclick="toggleFullscreen()" title="Toggle Fullscreen" id="btnFs">⛶</button>
+    </div>
+  </div>
+  <div class="progress-bar" id="progressBar" style="display:none;">
+    <div class="progress-fill" id="progressFill" style="width:100%; background:#27ae60;"></div>
+  </div>
+</div>
+
+<!-- ── Section Nav ── -->
+<div class="section-nav">
+  <div class="section-nav-inner" id="sectionNav"></div>
+</div>
+
+<!-- ── Data bar ── -->
+<div class="data-bar">
+  <button class="btn-data" onclick="exportData()">📥 Export Data</button>
+  <button class="btn-data" onclick="importData()">📤 Import Data</button>
+  <button class="btn-data" onclick="newMeeting()">🔄 New Meeting</button>
+  <button class="btn-data danger" onclick="clearAllData()">🗑 Clear All</button>
+</div>
+
+<!-- ── Content ── -->
+<div class="content-wrap">
+  <div class="content-card">
+    <div class="content-header">
+      <div>
+        <h2 id="sectionTitle"></h2>
+        <div class="desc" id="sectionDesc"></div>
+      </div>
+      <button class="btn-next" id="btnNext" onclick="nextSection()">Next →</button>
+    </div>
+    <div class="content-body" id="contentBody"></div>
+  </div>
+</div>
+
+<input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<!-- ── Footer badge ── -->
+<div class="sp-footer">
+  <div class="sp-footer-badge" id="footerBadge">☁️ Connected to SharePoint</div>
+</div>
+
+<!-- ── Toasts ── -->
+<div id="toastWrap"></div>
+
+<script>
+// ──────────────────────────────────────────────────────────
+// DATA
+// ──────────────────────────────────────────────────────────
+const SECTIONS = [
+  { id:"segue", label:"Segue", icon:"💬", minutes:5, desc:"Good news — personal & professional" },
+  { id:"scorecard", label:"Scorecard", icon:"📊", minutes:5, desc:"Review weekly metrics" },
+  { id:"rocks", label:"Rock Review", icon:"🪨", minutes:5, desc:"Are rocks on track or off track?" },
+  { id:"headlines", label:"Headlines", icon:"📰", minutes:5, desc:"Customer & employee headlines" },
+  { id:"todos", label:"To-Do List", icon:"✅", minutes:5, desc:"Review last week's to-dos" },
+  { id:"ids", label:"IDS", icon:"⚡", minutes:60, desc:"Identify, Discuss, Solve" },
+  { id:"conclude", label:"Conclude", icon:"🏁", minutes:5, desc:"Recap to-dos, cascading messages, rating" },
+  { id:"orgchart", label:"Org Chart", icon:"🏢", minutes:0, desc:"Accountability chart — add positions, titles & reporting lines" },
+  { id:"vto", label:"VTO", icon:"🎯", minutes:0, desc:"Vision/Traction Organizer — your company blueprint" },
+];
+
+const DEFAULT_ORG = [
+  { id: 1, title: "VISIONARY", name: "", parentId: null, responsibilities: [
+    "Company vision & direction",
+    "Culture & core values",
+    "Major business relationships",
+    "R&D and innovation",
+    "Brand strategy",
+  ] },
+  { id: 2, title: "GACG", name: "", parentId: null, responsibilities: [] },
+  { id: 3, title: "FINANCE", name: "", parentId: 1, responsibilities: [
+    "Accounting & reporting",
+    "Budgets & forecasting",
+    "Cash flow management",
+    "AP/AR oversight",
+  ] },
+  { id: 4, title: "PROJECT COORDINATION", name: "", parentId: 1, responsibilities: [
+    "Integrator role - harmonize all departments",
+    "Project scheduling & tracking",
+    "Cross-department communication",
+    "Process improvement",
+  ] },
+  { id: 5, title: "OPERATIONS", name: "", parentId: 1, responsibilities: [
+    "Field operations oversight",
+    "Subcontractor management",
+    "Resource allocation",
+    "Safety & compliance",
+  ] },
+  { id: 6, title: "ESTIMATING", name: "", parentId: 1, responsibilities: [
+    "Bid management",
+    "Takeoffs & proposals",
+    "Cost analysis",
+    "Vendor pricing",
+  ] },
+  { id: 7, title: "BUSINESS DEV", name: "", parentId: 1, responsibilities: [
+    "Sales pipeline",
+    "Client relationships",
+    "Marketing strategy",
+    "Proposal coordination",
+  ] },
+  { id: 8, title: "HR", name: "", parentId: 1, responsibilities: [
+    "Recruiting & hiring",
+    "Benefits administration",
+    "Employee development",
+    "Culture & retention",
+  ] },
+  { id: 9, title: "GC", name: "", parentId: 5, responsibilities: [
+    "General contracting execution",
+    "Subcontractor coordination",
+    "Field supervision",
+  ] },
+  { id: 10, title: "PRECON", name: "", parentId: 5, responsibilities: [
+    "Preconstruction planning",
+    "Value engineering",
+    "Buildability reviews",
+    "Scheduling",
+  ] },
+  { id: 11, title: "CM", name: "", parentId: 5, responsibilities: [
+    "Construction management",
+    "Site oversight & quality control",
+    "Client coordination",
+    "Safety programs",
+  ] },
+];
+function cloneDefaultOrg() {
+  return DEFAULT_ORG.map(function(n){
+    return Object.assign({}, n, { responsibilities: Array.isArray(n.responsibilities) ? n.responsibilities.slice() : [] });
+  });
+}
+
+const DEFAULT_VTO = {
+  coreValues: ["", "", ""],
+  coreFocus: { purpose: "", niche: "" },
+  tenYearTarget: "",
+  marketingStrategy: {
+    targetMarket: "",
+    threeUniques: ["", "", ""],
+    provenProcess: "",
+    guarantee: "",
+  },
+  threeYearPicture: {
+    futureDate: "",
+    revenue: "",
+    profit: "",
+    measurables: ["", "", ""],
+    whatDoesItLookLike: "",
+  },
+  oneYearPlan: {
+    futureDate: "",
+    revenue: "",
+    profit: "",
+    goals: ["", "", "", "", "", "", ""],
+  },
+  rocks: ["", "", "", "", "", "", ""],
+  issues: ["", "", "", "", "", ""],
+};
+function cloneDefaultVto() { return JSON.parse(JSON.stringify(DEFAULT_VTO)); }
+
+let state = {
+  activeSection: 0,
+  timerRunning: false,
+  timeLeft: SECTIONS[0].minutes * 60,
+  meetingStarted: false,
+  scorecard: [{ id:1, metric:"", goal:"", actual:"", owner:"" }],
+  rocks: [{ id:1, text:"", owner:"", onTrack:true }],
+  todos: [],
+  issues: [],
+  headlines: [],
+  segueNotes: "",
+  concludeRating: 0,
+  concludeMessages: "",
+  orgChart: cloneDefaultOrg(),
+  orgCollapsed: [],
+  vto: cloneDefaultVto(),
+};
+
+let timerInterval = null;
+let uid = 100;
+function nid() {
+  uid++;
+  // Ensure no collision with org chart IDs
+  if (state.orgChart && state.orgChart.length > 0) {
+    const maxOrgId = Math.max(...state.orgChart.map(n => n.id));
+    if (uid <= maxOrgId) uid = maxOrgId + 1;
+  }
+  return uid;
+}
+
+// ──────────────────────────────────────────────────────────
+// STORAGE
+// ──────────────────────────────────────────────────────────
+function saveState() {
+  try { localStorage.setItem("eos-l10-data", JSON.stringify(state)); } catch {}
+  if (typeof markSpPending === 'function') markSpPending();
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem("eos-l10-data");
+    if (raw) {
+      const saved = JSON.parse(raw);
+      Object.assign(state, saved);
+      // Repair or seed the org chart if an older/malformed save is present
+      sanitizeOrgChart();
+      // Seed VTO for saves from before it existed
+      sanitizeVto();
+      // Reset meeting-specific runtime state
+      state.timerRunning = false;
+      state.meetingStarted = false;
+      state.timeLeft = SECTIONS[state.activeSection].minutes * 60;
+    }
+  } catch {}
+}
+
+// ──────────────────────────────────────────────────────────
+// TIMER
+// ──────────────────────────────────────────────────────────
+function startMeeting() {
+  state.meetingStarted = true;
+  state.timerRunning = true;
+  document.getElementById("startArea").style.display = "none";
+  document.getElementById("timerArea").style.display = "flex";
+  document.getElementById("progressBar").style.display = "";
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  if (state.timerRunning && state.timeLeft > 0) {
+    timerInterval = setInterval(() => {
+      state.timeLeft--;
+      updateTimerUI();
+      if (state.timeLeft <= 0) {
+        state.timerRunning = false;
+        clearInterval(timerInterval);
+        updateTimerUI();
+      }
+    }, 1000);
+  }
+  updateTimerUI();
+}
+
+function togglePause() {
+  state.timerRunning = !state.timerRunning;
+  if (state.timerRunning) startTimer();
+  else clearInterval(timerInterval);
+  updateTimerUI();
+}
+
+function resetTimer() {
+  state.timeLeft = SECTIONS[state.activeSection].minutes * 60;
+  state.timerRunning = false;
+  clearInterval(timerInterval);
+  updateTimerUI();
+}
+
+function updateTimerUI() {
+  const m = Math.floor(Math.max(0, state.timeLeft) / 60);
+  const s = Math.max(0, state.timeLeft) % 60;
+  const display = `${m}:${s.toString().padStart(2, "0")}`;
+  const overtime = state.timeLeft <= 0;
+  const warning = state.timeLeft > 0 && state.timeLeft <= 60;
+
+  document.getElementById("timerDisplay").textContent = overtime ? "0:00" : display;
+  document.getElementById("timerLabel").textContent = overtime ? "OVERTIME" : warning ? "WRAPPING UP" : "REMAINING";
+
+  const box = document.getElementById("timerBox");
+  box.style.background = overtime ? "#e74c3c" : warning ? "#f39c12" : "rgba(255,255,255,0.15)";
+
+  const btn = document.getElementById("btnPause");
+  btn.textContent = state.timerRunning ? "⏸ Pause" : "▶ Resume";
+
+  const total = SECTIONS[state.activeSection].minutes * 60;
+  const pct = Math.max(0, (state.timeLeft / total) * 100);
+  const fill = document.getElementById("progressFill");
+  fill.style.width = pct + "%";
+  fill.style.background = overtime ? "#e74c3c" : warning ? "#f39c12" : "#27ae60";
+}
+
+// ──────────────────────────────────────────────────────────
+// FULLSCREEN
+// ──────────────────────────────────────────────────────────
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+}
+document.addEventListener("fullscreenchange", () => {
+  document.getElementById("btnFs").textContent = document.fullscreenElement ? "⊗" : "⛶";
+});
+
+// ──────────────────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────────────────
+function switchSection(idx) {
+  state.activeSection = idx;
+  const mins = SECTIONS[idx].minutes;
+  if (mins > 0) {
+    state.timeLeft = mins * 60;
+    state.timerRunning = false;
+    clearInterval(timerInterval);
+    updateTimerUI();
+  }
+  renderNav();
+  renderContent();
+  saveState();
+}
+
+function nextSection() {
+  if (state.activeSection < SECTIONS.length - 1) switchSection(state.activeSection + 1);
+}
+
+function renderNav() {
+  const nav = document.getElementById("sectionNav");
+  nav.innerHTML = SECTIONS.map((sec, i) =>
+    `<button class="nav-btn ${i === state.activeSection ? 'active' : ''}" onclick="switchSection(${i})">
+      <span class="icon">${sec.icon}</span>
+      <span>${sec.label}</span>
+      ${sec.minutes > 0 ? `<span class="mins">${sec.minutes}m</span>` : ''}
+    </button>`
+  ).join("");
+
+  const sec = SECTIONS[state.activeSection];
+  document.getElementById("sectionTitle").textContent = sec.icon + " " + sec.label;
+  document.getElementById("sectionDesc").textContent = sec.desc;
+
+  const btnNext = document.getElementById("btnNext");
+  // Hide Next on conclude and the reference sections (orgchart, vto)
+  if (state.activeSection < SECTIONS.length - 1 && sec.id !== 'conclude' && sec.id !== 'orgchart' && sec.id !== 'vto') {
+    btnNext.style.display = "";
+    btnNext.textContent = "Next → " + SECTIONS[state.activeSection + 1].label;
+  } else {
+    btnNext.style.display = "none";
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// RENDER CONTENT
+// ──────────────────────────────────────────────────────────
+function renderContent() {
+  const sec = SECTIONS[state.activeSection];
+  const body = document.getElementById("contentBody");
+  switch (sec.id) {
+    case "segue": body.innerHTML = renderSegue(); break;
+    case "scorecard": body.innerHTML = renderScorecard(); break;
+    case "rocks": body.innerHTML = renderRocks(); break;
+    case "headlines": body.innerHTML = renderHeadlines(); break;
+    case "todos": body.innerHTML = renderTodos(); break;
+    case "ids": body.innerHTML = renderIDS(); break;
+    case "conclude": body.innerHTML = renderConclude(); break;
+    case "orgchart": renderOrgChart(body); break;
+    case "vto": body.innerHTML = renderVTO(); break;
+  }
+}
+
+// ── SEGUE ──
+function renderSegue() {
+  return `<p style="color:#6b7094; font-size:14px; margin-bottom:16px; line-height:1.6;">
+    Share good news — personal and professional wins from the past week. Set a positive tone for the meeting.
+  </p>
+  <textarea style="width:100%; min-height:180px; box-sizing:border-box;" placeholder="Capture good news shared by team members..."
+    oninput="state.segueNotes=this.value; saveState()">${esc(state.segueNotes)}</textarea>`;
+}
+
+// ── SCORECARD ──
+function renderScorecard() {
+  let rows = state.scorecard.map((r, i) => {
+    const clr = r.actual && r.goal && parseFloat(r.actual) < parseFloat(r.goal) ? "#e74c3c" : "#27ae60";
+    return `<tr>
+      <td><input type="text" value="${esc(r.metric)}" placeholder="e.g. Revenue" oninput="state.scorecard[${i}].metric=this.value; saveState()"></td>
+      <td><input type="text" value="${esc(r.goal)}" placeholder="Target" style="width:80px" oninput="state.scorecard[${i}].goal=this.value; saveState(); renderContent()"></td>
+      <td><input type="text" value="${esc(r.actual)}" placeholder="Actual" style="width:80px; color:${clr}" oninput="state.scorecard[${i}].actual=this.value; saveState(); renderContent()"></td>
+      <td><input type="text" value="${esc(r.owner)}" placeholder="Owner" style="width:100px" oninput="state.scorecard[${i}].owner=this.value; saveState()"></td>
+      <td><button class="btn-del" onclick="state.scorecard.splice(${i},1); saveState(); renderContent()">×</button></td>
+    </tr>`;
+  }).join("");
+  return `<div style="overflow-x:auto"><table><thead><tr><th>Metric</th><th>Goal</th><th>Actual</th><th>Owner</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+  <button class="btn-add" onclick="state.scorecard.push({id:nid(),metric:'',goal:'',actual:'',owner:''}); saveState(); renderContent()">+ Add Metric</button>`;
+}
+
+// ── ROCKS ──
+function renderRocks() {
+  let rows = state.rocks.map((r, i) => {
+    const bg = r.onTrack ? "#27ae60" : "#e74c3c";
+    const sym = r.onTrack ? "✓" : "✗";
+    return `<div class="row">
+      <button class="btn-track" style="background:${bg}" onclick="toggleRockTrack(${i})" title="Toggle on/off track">${sym}</button>
+      <input type="text" value="${esc(r.text)}" placeholder="Rock description..." style="flex:1" oninput="state.rocks[${i}].text=this.value; saveState()">
+      <input type="text" value="${esc(r.owner)}" placeholder="Owner" style="width:110px" oninput="state.rocks[${i}].owner=this.value; saveState()">
+      <button class="btn-del" onclick="state.rocks.splice(${i},1); saveState(); renderContent()">×</button>
+    </div>`;
+  }).join("");
+  return rows + `<button class="btn-add" onclick="state.rocks.push({id:nid(),text:'',owner:'',onTrack:true}); saveState(); renderContent()">+ Add Rock</button>`;
+}
+
+function toggleRockTrack(i) {
+  const r = state.rocks[i];
+  if (!r) return;
+  const wasOnTrack = r.onTrack;
+  r.onTrack = !r.onTrack;
+
+  // Transition to off-track: auto-create an IDS issue if none is already open for this rock.
+  // A prior issue that was solved (movedToTodo) or deleted does not block creating a new one.
+  if (wasOnTrack && !r.onTrack) {
+    const existing = state.issues.find(is => is && is.sourceRockId === r.id && !is.movedToTodo);
+    if (!existing) {
+      const ownerSuffix = r.owner ? " (" + r.owner + ")" : "";
+      state.issues.push({
+        id: nid(),
+        text: "Off Track Rock: " + (r.text || "(untitled rock)") + ownerSuffix,
+        priority: 2,
+        phase: "identify",
+        solution: "",
+        sourceRockId: r.id,
+      });
+      if (typeof showToast === 'function') showToast("Added to IDS list", "ok");
+    }
+  }
+
+  saveState();
+  renderContent();
+}
+
+// ── HEADLINES ──
+function renderHeadlines() {
+  let rows = state.headlines.map((h, i) => {
+    return `<div class="row">
+      <select style="width:105px; font-size:12px; font-weight:600" onchange="state.headlines[${i}].type=this.value; saveState()">
+        <option value="customer" ${h.type==='customer'?'selected':''}>Customer</option>
+        <option value="employee" ${h.type==='employee'?'selected':''}>Employee</option>
+      </select>
+      <input type="text" value="${esc(h.text)}" placeholder="Headline..." style="flex:1" oninput="state.headlines[${i}].text=this.value; saveState()">
+      <button class="btn-ids-push" onclick="pushHeadlineToIDS(${i})">→ IDS</button>
+      <button class="btn-del" onclick="state.headlines.splice(${i},1); saveState(); renderContent()">×</button>
+    </div>`;
+  }).join("");
+  return `<div style="font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#6b7094; margin-bottom:12px;">Customer / Employee Headlines</div>` +
+    rows + `<button class="btn-add" onclick="state.headlines.push({id:nid(),text:'',type:'customer'}); saveState(); renderContent()">+ Add Headline</button>`;
+}
+
+function pushHeadlineToIDS(i) {
+  const h = state.headlines[i];
+  if (h && h.text) {
+    state.issues.push({ id: nid(), text: h.text, priority: 1, phase: "identify", solution: "" });
+    saveState();
+    alert("Added to IDS list: " + h.text);
+  }
+}
+
+// ── TODOS ──
+function renderTodos() {
+  let rows = state.todos.map((t, i) => {
+    const chkBg = t.done ? "#27ae60" : "transparent";
+    const chkBorder = t.done ? "none" : "2px solid #c0c4d8";
+    const chkText = t.done ? "✓" : "";
+    const txtDeco = t.done ? "text-decoration:line-through; opacity:0.5;" : "";
+    return `<div class="row">
+      <button class="btn-check" style="background:${chkBg}; border:${chkBorder}; color:#fff;"
+        onclick="state.todos[${i}].done=!state.todos[${i}].done; saveState(); renderContent()">${chkText}</button>
+      <input type="text" value="${esc(t.text)}" placeholder="To-do item..." style="flex:1; ${txtDeco}" oninput="state.todos[${i}].text=this.value; saveState()">
+      <input type="text" value="${esc(t.owner)}" placeholder="Owner" style="width:110px" oninput="state.todos[${i}].owner=this.value; saveState()">
+      <input type="date" value="${esc(t.due||'')}" style="width:130px" oninput="state.todos[${i}].due=this.value; saveState()">
+      <button class="btn-del" onclick="state.todos.splice(${i},1); saveState(); renderContent()">×</button>
+    </div>`;
+  }).join("");
+  return rows + `<button class="btn-add" onclick="state.todos.push({id:nid(),text:'',owner:'',due:'',done:false}); saveState(); renderContent()">+ Add To-Do</button>`;
+}
+
+// ── IDS ──
+function renderIDS() {
+  const sorted = state.issues.map((issue, origIdx) => ({ issue, origIdx }))
+    .sort((a, b) => (b.issue.priority || 0) - (a.issue.priority || 0));
+
+  let rows = sorted.map(({ issue, origIdx }) => {
+    const phaseColors = { identify: "#e65100", discuss: "#1565c0", solve: "#2e7d32" };
+    const clr = phaseColors[issue.phase] || "#e65100";
+
+    let rockBadge = "";
+    let backOnTrackNote = "";
+    if (issue.sourceRockId != null) {
+      rockBadge = `<span title="Sourced from an off-track rock" style="font-size:16px; flex-shrink:0; padding:0 2px;">🪨</span>`;
+      const srcRock = state.rocks.find(r => r && r.id === issue.sourceRockId);
+      if (srcRock && srcRock.onTrack) {
+        backOnTrackNote = `<div style="margin-left:62px; margin-top:6px; color:#27ae60; font-size:12px; font-weight:700;">✓ Rock back on track</div>`;
+      }
+    }
+
+    let solHtml = "";
+    if (issue.phase === "solve") {
+      const btnLabel = issue.movedToTodo ? "✓ Added to To-Dos" : "→ Move to To-Do List";
+      const btnBg = issue.movedToTodo ? "#1a7a30" : "#2e7d32";
+      solHtml = `<div class="solution-row">
+        <input type="text" value="${esc(issue.solution||'')}" placeholder="Solution → becomes a to-do..." style="width:100%; background:#e8f5e9;"
+          oninput="state.issues[${origIdx}].solution=this.value; saveState()">
+        <button class="btn-to-todo" style="background:${btnBg}; color:#fff;" onclick="moveIssueToTodo(${origIdx})">${btnLabel}</button>
+      </div>`;
+    }
+    return `<div style="padding:12px 0; border-bottom:1px solid #e8e9f0;">
+      <div class="row" style="border:none; padding:0;">
+        <select style="width:50px; text-align:center; font-weight:700; font-size:16px; padding:4px 2px;" onchange="state.issues[${origIdx}].priority=parseInt(this.value); saveState(); renderContent()">
+          <option value="3" ${issue.priority===3?'selected':''}>1</option>
+          <option value="2" ${issue.priority===2?'selected':''}>2</option>
+          <option value="1" ${issue.priority===1||!issue.priority?'selected':''}>3</option>
+        </select>
+        ${rockBadge}
+        <input type="text" value="${esc(issue.text)}" placeholder="Issue..." style="flex:1; font-weight:600;" oninput="state.issues[${origIdx}].text=this.value; saveState()">
+        <select style="width:110px; font-size:12px; font-weight:600; color:${clr};" onchange="state.issues[${origIdx}].phase=this.value; saveState(); renderContent()">
+          <option value="identify" ${issue.phase==='identify'?'selected':''}>Identify</option>
+          <option value="discuss" ${issue.phase==='discuss'?'selected':''}>Discuss</option>
+          <option value="solve" ${issue.phase==='solve'?'selected':''}>Solve</option>
+        </select>
+        <button class="btn-del" onclick="state.issues.splice(${origIdx},1); saveState(); renderContent()">×</button>
+      </div>
+      ${backOnTrackNote}
+      ${solHtml}
+    </div>`;
+  }).join("");
+
+  return `<div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+    <span class="tag" style="background:#fff3e0; color:#e65100;">Identify</span>
+    <span class="tag" style="background:#e3f2fd; color:#1565c0;">Discuss</span>
+    <span class="tag" style="background:#e8f5e9; color:#2e7d32;">Solve</span>
+  </div>` + rows +
+  `<button class="btn-add" onclick="state.issues.push({id:nid(),text:'',priority:1,phase:'identify',solution:''}); saveState(); renderContent()">+ Add Issue</button>`;
+}
+
+function moveIssueToTodo(idx) {
+  const issue = state.issues[idx];
+  if (issue && issue.solution && !issue.movedToTodo) {
+    state.todos.push({ id: nid(), text: issue.solution, owner: "", due: "", done: false });
+    state.issues[idx].movedToTodo = true;
+    saveState();
+    renderContent();
+  }
+}
+
+// ── CONCLUDE ──
+function renderConclude() {
+  const openTodos = state.todos.filter(t => !t.done);
+  let recapHtml = openTodos.length === 0
+    ? '<p style="color:#6b7094; font-size:14px;">No open to-dos.</p>'
+    : openTodos.map(t => `<div style="padding:4px 0; font-size:14px;">• ${esc(t.text || '(untitled)')}${t.owner ? ' <span style="color:#6b7094">— ' + esc(t.owner) + '</span>' : ''}</div>`).join("");
+
+  let ratingHtml = [1,2,3,4,5,6,7,8,9,10].map(n => {
+    const sel = state.concludeRating === n;
+    return `<button class="rating-btn" style="border:${sel?'2px solid #1a1a2e':'1px solid #d0d3e0'}; background:${sel?'#1a1a2e':'#fff'}; color:${sel?'#fff':'#1a1a2e'};"
+      onclick="state.concludeRating=${n}; saveState(); renderContent()">${n}</button>`;
+  }).join("");
+
+  return `<h4 style="margin:0 0 12px;">Recap New To-Dos</h4>
+  <div class="recap-box">${recapHtml}</div>
+  <h4 style="margin:0 0 12px;">Cascading Messages</h4>
+  <textarea style="width:100%; min-height:80px; box-sizing:border-box; margin-bottom:24px;" placeholder="Key messages to cascade to the organization..."
+    oninput="state.concludeMessages=this.value; saveState()">${esc(state.concludeMessages)}</textarea>
+  <h4 style="margin:0 0 12px;">Meeting Rating</h4>
+  <div style="display:flex; gap:8px; align-items:center;">
+    ${ratingHtml}
+    <span style="margin-left:8px; color:#6b7094; font-size:14px;">/10</span>
+  </div>
+  <div style="margin-top:24px; border-top:1px solid #e8e9f0; padding-top:16px;">
+    <button type="button" class="btn-history" onclick="showMeetingHistory()">📜 View Meeting History</button>
+  </div>`;
+}
+
+// ──────────────────────────────────────────────────────────
+// ORG CHART
+// ──────────────────────────────────────────────────────────
+let orgEditId = null;
+
+function sanitizeOrgChart() {
+  if (!Array.isArray(state.orgChart) || state.orgChart.length === 0) {
+    state.orgChart = cloneDefaultOrg();
+  } else {
+    const seen = new Set();
+    const clean = [];
+    for (const n of state.orgChart) {
+      if (!n || typeof n.id !== 'number' || seen.has(n.id)) continue;
+      seen.add(n.id);
+      clean.push({
+        id: n.id,
+        title: typeof n.title === 'string' ? n.title : '',
+        name: typeof n.name === 'string' ? n.name : '',
+        parentId: typeof n.parentId === 'number' ? n.parentId : null,
+        responsibilities: Array.isArray(n.responsibilities)
+          ? n.responsibilities.map(function(x){ return typeof x === 'string' ? x : String(x == null ? '' : x); })
+          : [],
+      });
+    }
+    for (const n of clean) {
+      if (n.parentId !== null && !seen.has(n.parentId)) n.parentId = null;
+    }
+    state.orgChart = clean.length ? clean : cloneDefaultOrg();
+  }
+  if (!Array.isArray(state.orgCollapsed)) state.orgCollapsed = [];
+  const ids = new Set(state.orgChart.map(n => n.id));
+  state.orgCollapsed = state.orgCollapsed.filter(x => ids.has(x));
+}
+
+function orgPath(id) {
+  const parts = [];
+  let cur = state.orgChart.find(n => n.id === id);
+  let guard = 0;
+  while (cur && guard++ < 50) {
+    parts.unshift(cur.title || 'Untitled');
+    if (cur.parentId === null) break;
+    cur = state.orgChart.find(n => n.id === cur.parentId);
+  }
+  return parts.join(' > ');
+}
+
+function orgDescendants(id) {
+  const out = new Set();
+  function walk(pid) {
+    for (const n of state.orgChart) {
+      if (n.parentId === pid && !out.has(n.id)) {
+        out.add(n.id);
+        walk(n.id);
+      }
+    }
+  }
+  walk(id);
+  return out;
+}
+
+function isOrgCollapsed(id) {
+  return Array.isArray(state.orgCollapsed) && state.orgCollapsed.indexOf(id) !== -1;
+}
+
+function toggleOrgCollapse(id) {
+  if (!Array.isArray(state.orgCollapsed)) state.orgCollapsed = [];
+  const i = state.orgCollapsed.indexOf(id);
+  if (i === -1) state.orgCollapsed.push(id);
+  else state.orgCollapsed.splice(i, 1);
+  saveState();
+  drawOrgTree();
+}
+
+function renderOrgChart(container) {
+  sanitizeOrgChart();
+  const nodes = state.orgChart;
+  const editNode = orgEditId ? nodes.find(n => n.id === orgEditId) : null;
+
+  const buttonsHtml = `
+    <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
+      <button class="btn-add" style="margin:0;" onclick="addOrgNode()">+ Add Position</button>
+      <button class="btn-add" style="margin:0;" onclick="resetOrgChart()">↺ Reset to Default</button>
+      <span style="color:#6b7094; font-size:13px; margin-left:8px;">${nodes.length} position${nodes.length !== 1 ? 's' : ''} · Click any box to open details · Use <strong>−</strong>/<strong>+</strong> to collapse branches</span>
+    </div>`;
+
+  let panelHtml = '';
+  if (editNode) {
+    const blocked = orgDescendants(editNode.id);
+    blocked.add(editNode.id);
+    const parentOpts = nodes
+      .filter(n => !blocked.has(n.id))
+      .map(n => `<option value="${n.id}" ${editNode.parentId === n.id ? 'selected' : ''}>${esc(orgPath(n.id))}</option>`)
+      .join('');
+    panelHtml = `
+      <div class="org-panel-accent"></div>
+      <div class="org-panel-header">
+        <h3>Position Details</h3>
+        <button class="btn-del" onclick="orgEditId=null; renderContent()" title="Close">×</button>
+      </div>
+      <div class="org-panel-body">
+        <label class="panel-label">Title / Role</label>
+        <input type="text" class="panel-title-input" id="orgEditTitle" value="${esc(editNode.title)}" placeholder="e.g. VP Operations"
+          oninput="orgTextUpdate(${editNode.id},'title',this.value)" onblur="orgTextCommit()">
+        <label class="panel-label">Name</label>
+        <input type="text" class="panel-name-input" id="orgEditName" value="${esc(editNode.name)}" placeholder="Person's name"
+          oninput="orgTextUpdate(${editNode.id},'name',this.value)" onblur="orgTextCommit()">
+        <label class="panel-label">Reports To</label>
+        <select style="width:100%" onchange="updateOrgNode(${editNode.id},'parentId',this.value ? parseInt(this.value) : null)">
+          <option value="" ${editNode.parentId === null ? 'selected' : ''}>(Top Level)</option>
+          ${parentOpts}
+        </select>
+        <div class="org-panel-divider"></div>
+        <label class="panel-label">Key Responsibilities</label>
+        <div id="orgRespList">${renderOrgRespList(editNode.id)}</div>
+        <div class="org-panel-divider"></div>
+        <button class="btn-delete-position" onclick="deleteOrgNode(${editNode.id})">Delete Position</button>
+      </div>`;
+  }
+
+  const panelElement = editNode
+    ? `<div class="org-panel" id="orgSidePanel">${panelHtml}</div>`
+    : '';
+
+  container.innerHTML = buttonsHtml + `
+    <div class="org-chart-area">
+      <div class="org-chart-canvas" id="orgChartSvgWrap"></div>
+      ${panelElement}
+    </div>`;
+
+  drawOrgTree();
+}
+
+function renderOrgRespList(nodeId) {
+  const node = state.orgChart.find(n => n.id === nodeId);
+  if (!node) return '';
+  const resps = Array.isArray(node.responsibilities) ? node.responsibilities : [];
+  const rows = resps.map(function(r, i) {
+    return `<div class="resp-row">
+      <input type="text" value="${esc(r)}" placeholder="Responsibility..."
+        oninput="orgRespUpdate(${nodeId},${i},this.value)"
+        onblur="orgRespCommit()">
+      <button type="button" class="resp-del" title="Remove"
+        onclick="deleteOrgResp(${nodeId},${i})">×</button>
+    </div>`;
+  }).join('');
+  return rows + `<button type="button" class="btn-add-resp" onclick="addOrgResp(${nodeId})">+ Add Responsibility</button>`;
+}
+
+function orgRespUpdate(nodeId, idx, value) {
+  const node = state.orgChart.find(n => n.id === nodeId);
+  if (!node || !Array.isArray(node.responsibilities)) return;
+  node.responsibilities[idx] = value;
+}
+
+function orgRespCommit() { saveState(); }
+
+function addOrgResp(nodeId) {
+  const node = state.orgChart.find(n => n.id === nodeId);
+  if (!node) return;
+  if (!Array.isArray(node.responsibilities)) node.responsibilities = [];
+  node.responsibilities.push('');
+  saveState();
+  const wrap = document.getElementById('orgRespList');
+  if (wrap) {
+    wrap.innerHTML = renderOrgRespList(nodeId);
+    const inputs = wrap.querySelectorAll('.resp-row input[type="text"]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+}
+
+function deleteOrgResp(nodeId, idx) {
+  const node = state.orgChart.find(n => n.id === nodeId);
+  if (!node || !Array.isArray(node.responsibilities)) return;
+  node.responsibilities.splice(idx, 1);
+  saveState();
+  const wrap = document.getElementById('orgRespList');
+  if (wrap) wrap.innerHTML = renderOrgRespList(nodeId);
+}
+
+function selectOrgNode(id) {
+  // Toggle: clicking the same box again closes the panel
+  orgEditId = (orgEditId === id) ? null : id;
+  renderContent();
+}
+
+function drawOrgTree() {
+  const wrap = document.getElementById('orgChartSvgWrap');
+  if (!wrap) return;
+  const nodes = state.orgChart || [];
+
+  try {
+    const BOX_W = 160, BOX_H = 58, H_GAP = 24, V_GAP = 80, PAD = 40;
+    const PLUS_R = 11, PLUS_OFFSET = 18, TOGGLE_R = 9;
+
+    const idSet = new Set(nodes.map(n => n.id));
+    const childrenMap = {};
+    nodes.forEach(n => { childrenMap[n.id] = []; });
+    nodes.forEach(n => {
+      if (n.parentId !== null && childrenMap[n.parentId] !== undefined) {
+        childrenMap[n.parentId].push(n.id);
+      }
+    });
+
+    const roots = nodes
+      .filter(n => n.parentId === null || !idSet.has(n.parentId))
+      .map(n => n.id);
+    if (roots.length === 0 && nodes.length) roots.push(nodes[0].id);
+
+    console.log('drawOrgTree: nodes=' + nodes.length + ', roots=' + roots.length);
+
+    if (nodes.length === 0) {
+      wrap.innerHTML = '<div style="padding:40px; text-align:center; color:#6b7094;">No positions yet. Click "+ Add Position" to start building your org chart.</div>';
+      return;
+    }
+
+    // Hide descendants of collapsed nodes
+    const hidden = new Set();
+    function hideSubtree(pid) {
+      const kids = childrenMap[pid] || [];
+      for (const k of kids) {
+        if (!hidden.has(k)) {
+          hidden.add(k);
+          hideSubtree(k);
+        }
+      }
+    }
+    nodes.forEach(n => { if (isOrgCollapsed(n.id)) hideSubtree(n.id); });
+
+    function visibleKids(id) {
+      if (isOrgCollapsed(id)) return [];
+      return (childrenMap[id] || []).filter(k => !hidden.has(k));
+    }
+
+    const widths = {};
+    const widthVisited = {};
+    function calcWidth(id) {
+      if (widthVisited[id]) return widths[id] || BOX_W;
+      widthVisited[id] = true;
+      const kids = visibleKids(id);
+      if (!kids.length) { widths[id] = BOX_W; return BOX_W; }
+      let total = 0;
+      for (let i = 0; i < kids.length; i++) {
+        total += calcWidth(kids[i]);
+        if (i > 0) total += H_GAP;
+      }
+      widths[id] = Math.max(total, BOX_W);
+      return widths[id];
+    }
+
+    const positions = {};
+    const laidOut = {};
+    function layoutNode(id, cx, ty) {
+      if (laidOut[id]) return;
+      laidOut[id] = true;
+      positions[id] = { x: cx, y: ty };
+      const kids = visibleKids(id);
+      if (!kids.length) return;
+      let totalKW = 0;
+      for (let i = 0; i < kids.length; i++) {
+        totalKW += widths[kids[i]] || BOX_W;
+        if (i > 0) totalKW += H_GAP;
+      }
+      let curX = cx - totalKW / 2;
+      for (let i = 0; i < kids.length; i++) {
+        const kw = widths[kids[i]] || BOX_W;
+        layoutNode(kids[i], curX + kw / 2, ty + BOX_H + V_GAP);
+        curX += kw + H_GAP;
+      }
+    }
+
+    for (let i = 0; i < roots.length; i++) calcWidth(roots[i]);
+
+    let rx = PAD;
+    for (let i = 0; i < roots.length; i++) {
+      const rw = widths[roots[i]] || BOX_W;
+      layoutNode(roots[i], rx + rw / 2, PAD);
+      rx += rw + H_GAP;
+    }
+
+    let maxX = 0, maxY = 0;
+    Object.keys(positions).forEach(k => {
+      const p = positions[k];
+      if (p.x + BOX_W/2 + PAD > maxX) maxX = p.x + BOX_W/2 + PAD;
+      if (p.y + BOX_H + PLUS_OFFSET + PLUS_R + PAD > maxY) maxY = p.y + BOX_H + PLUS_OFFSET + PLUS_R + PAD;
+    });
+    const svgW = Math.max(Math.ceil(maxX), 400);
+    const svgH = Math.max(Math.ceil(maxY), 240);
+
+    const depthCache = {};
+    function depthOf(id) {
+      if (depthCache[id] !== undefined) return depthCache[id];
+      const n = nodes.find(x => x.id === id);
+      if (!n || n.parentId === null || !idSet.has(n.parentId)) { depthCache[id] = 0; return 0; }
+      depthCache[id] = 1 + depthOf(n.parentId);
+      return depthCache[id];
+    }
+
+    const tierColors = ['#D6DFEF','#E4EBF7','#ECF0F9','#F3F5FB','#F8F9FD'];
+
+    let s = '';
+    s += '<svg xmlns="http://www.w3.org/2000/svg" width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" style="display:block; min-width:' + svgW + 'px;">';
+    s += '<defs><pattern id="orgDots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="0.8" fill="#c7cbdc" opacity="0.55"/></pattern></defs>';
+    s += '<rect width="100%" height="100%" fill="url(#orgDots)"/>';
+
+    // Elbow connectors: parent bottom-center → child top-center
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      if (n.parentId === null) continue;
+      const pp = positions[n.parentId];
+      const cp = positions[n.id];
+      if (!pp || !cp) continue;
+      const y1 = pp.y + BOX_H;
+      const y2 = cp.y;
+      const my = y1 + (y2 - y1) / 2;
+      s += '<path d="M' + pp.x + ' ' + y1 + ' L' + pp.x + ' ' + my + ' L' + cp.x + ' ' + my + ' L' + cp.x + ' ' + y2 + '" fill="none" stroke="#8FA3C3" stroke-width="1.5" stroke-linejoin="round"/>';
+    }
+
+    // Boxes
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const p = positions[n.id];
+      if (!p) continue;
+      const bx = p.x - BOX_W / 2, by = p.y;
+      const isEdit = orgEditId === n.id;
+      const d = depthOf(n.id);
+      const fc = isEdit ? '#DCE6F7' : tierColors[Math.min(d, tierColors.length - 1)];
+      const sc = isEdit ? '#4A6FA5' : '#C0CAE0';
+      const sw = isEdit ? 2.5 : 1;
+      const childCount = (childrenMap[n.id] || []).length;
+      const ttl = escXml(n.title || '(Untitled)');
+      const nm = escXml(n.name || '[Name]');
+
+      // Drop shadow
+      s += '<rect x="' + (bx + 1) + '" y="' + (by + 3) + '" width="' + BOX_W + '" height="' + BOX_H + '" rx="8" fill="rgba(26,26,46,0.08)"/>';
+
+      // Clickable group — select for editing
+      s += '<g style="cursor:pointer;" onclick="selectOrgNode(' + n.id + ')">';
+      s += '<rect x="' + bx + '" y="' + by + '" width="' + BOX_W + '" height="' + BOX_H + '" rx="8" fill="' + fc + '" stroke="' + sc + '" stroke-width="' + sw + '"/>';
+      s += '<rect x="' + bx + '" y="' + by + '" width="5" height="' + BOX_H + '" rx="3" fill="#1E2761"/>';
+      const tx = p.x + 3;
+      s += '<text x="' + tx + '" y="' + (by + 20) + '" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="11.5" fill="#1E2761">' + ttl + '</text>';
+      s += '<text x="' + tx + '" y="' + (by + 36) + '" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#4A6FA5">' + nm + '</text>';
+      if (childCount > 0) {
+        s += '<text x="' + tx + '" y="' + (by + 50) + '" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="600" fill="#6b7094">' + childCount + ' report' + (childCount === 1 ? '' : 's') + '</text>';
+      }
+      s += '</g>';
+
+      // Collapse/expand toggle at top-right corner, only when the node has children
+      if (childCount > 0) {
+        const tgx = bx + BOX_W - 11, tgy = by + 11;
+        const collapsed = isOrgCollapsed(n.id);
+        const sym = collapsed ? '+' : '−';
+        s += '<g style="cursor:pointer;" onclick="event.stopPropagation(); toggleOrgCollapse(' + n.id + ')">';
+        s += '<circle cx="' + tgx + '" cy="' + tgy + '" r="' + TOGGLE_R + '" fill="#fff" stroke="#4A6FA5" stroke-width="1.2"/>';
+        s += '<text x="' + tgx + '" y="' + (tgy + 4) + '" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12" font-weight="700" fill="#4A6FA5">' + sym + '</text>';
+        s += '</g>';
+      }
+
+      // Add-child button below the box — hidden when branch is collapsed to reduce noise
+      if (!isOrgCollapsed(n.id) || childCount === 0) {
+        const bcx = p.x, bcy = by + BOX_H + PLUS_OFFSET;
+        s += '<g style="cursor:pointer;" onclick="event.stopPropagation(); addOrgNodeUnder(' + n.id + ')">';
+        s += '<circle cx="' + bcx + '" cy="' + bcy + '" r="' + PLUS_R + '" fill="#fff" stroke="#C0CAE0" stroke-width="1"/>';
+        s += '<line x1="' + (bcx - 5) + '" y1="' + bcy + '" x2="' + (bcx + 5) + '" y2="' + bcy + '" stroke="#4A6FA5" stroke-width="2" stroke-linecap="round"/>';
+        s += '<line x1="' + bcx + '" y1="' + (bcy - 5) + '" x2="' + bcx + '" y2="' + (bcy + 5) + '" stroke="#4A6FA5" stroke-width="2" stroke-linecap="round"/>';
+        s += '</g>';
+      }
+    }
+
+    s += '</svg>';
+    wrap.innerHTML = s;
+  } catch (err) {
+    console.error('drawOrgTree error:', err);
+    wrap.innerHTML = '<div style="padding:20px; color:#e74c3c;">Error rendering chart: ' + escXml(err && err.message || String(err)) + '</div>';
+  }
+}
+
+function updateOrgNode(id, field, value) {
+  const node = state.orgChart.find(n => n.id === id);
+  if (!node) return;
+  if (field === 'parentId' && value !== null) {
+    let cur = value, guard = 0;
+    while (cur !== null && guard++ < 50) {
+      if (cur === id) return;
+      const parent = state.orgChart.find(n => n.id === cur);
+      cur = parent ? parent.parentId : null;
+    }
+  }
+  node[field] = value;
+  saveState();
+  renderContent();
+}
+
+// Text input updates — mutate state + redraw SVG only so the input keeps focus.
+function orgTextUpdate(id, field, value) {
+  const node = state.orgChart.find(n => n.id === id);
+  if (node) {
+    node[field] = value;
+    drawOrgTree();
+  }
+}
+
+function orgTextCommit() { saveState(); }
+
+function addOrgNode() {
+  const newId = nid();
+  const defaultParent = state.orgChart.length > 0 ? state.orgChart[0].id : null;
+  state.orgChart.push({ id: newId, title: "", name: "", parentId: defaultParent, responsibilities: [] });
+  orgEditId = newId;
+  saveState();
+  renderContent();
+  setTimeout(function(){ const el = document.getElementById('orgEditTitle'); if (el) el.focus(); }, 30);
+}
+
+function addOrgNodeUnder(parentId) {
+  const newId = nid();
+  state.orgChart.push({ id: newId, title: "", name: "", parentId: parentId, responsibilities: [] });
+  // Auto-expand the parent so the new child is visible
+  if (Array.isArray(state.orgCollapsed)) {
+    const i = state.orgCollapsed.indexOf(parentId);
+    if (i !== -1) state.orgCollapsed.splice(i, 1);
+  }
+  orgEditId = newId;
+  saveState();
+  renderContent();
+  setTimeout(function(){ const el = document.getElementById('orgEditTitle'); if (el) el.focus(); }, 30);
+}
+
+function deleteOrgNode(id) {
+  const node = state.orgChart.find(n => n.id === id);
+  if (!node) return;
+  state.orgChart.forEach(n => { if (n.parentId === id) n.parentId = node.parentId; });
+  state.orgChart = state.orgChart.filter(n => n.id !== id);
+  if (Array.isArray(state.orgCollapsed)) state.orgCollapsed = state.orgCollapsed.filter(x => x !== id);
+  orgEditId = null;
+  saveState();
+  renderContent();
+}
+
+function resetOrgChart() {
+  if (!confirm('Reset the org chart to the default EOS structure? Your other meeting data (scorecard, rocks, to-dos, issues, headlines, segue notes, rating) will be kept.')) return;
+  state.orgChart = cloneDefaultOrg();
+  state.orgCollapsed = [];
+  orgEditId = null;
+  saveState();
+  renderContent();
+}
+
+function escXml(s) {
+  if (s === undefined || s === null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+
+// ──────────────────────────────────────────────────────────
+// VTO (Vision / Traction Organizer)
+// ──────────────────────────────────────────────────────────
+function sanitizeVto() {
+  const def = cloneDefaultVto();
+  if (!state.vto || typeof state.vto !== 'object' || Array.isArray(state.vto)) {
+    state.vto = def;
+    return;
+  }
+  const v = state.vto;
+  if (!Array.isArray(v.coreValues)) v.coreValues = def.coreValues;
+  if (!v.coreFocus || typeof v.coreFocus !== 'object') v.coreFocus = def.coreFocus;
+  else {
+    if (typeof v.coreFocus.purpose !== 'string') v.coreFocus.purpose = '';
+    if (typeof v.coreFocus.niche !== 'string') v.coreFocus.niche = '';
+  }
+  if (typeof v.tenYearTarget !== 'string') v.tenYearTarget = '';
+  if (!v.marketingStrategy || typeof v.marketingStrategy !== 'object') v.marketingStrategy = def.marketingStrategy;
+  else {
+    const m = v.marketingStrategy;
+    if (typeof m.targetMarket !== 'string') m.targetMarket = '';
+    if (!Array.isArray(m.threeUniques)) m.threeUniques = def.marketingStrategy.threeUniques;
+    if (typeof m.provenProcess !== 'string') m.provenProcess = '';
+    if (typeof m.guarantee !== 'string') m.guarantee = '';
+  }
+  if (!v.threeYearPicture || typeof v.threeYearPicture !== 'object') v.threeYearPicture = def.threeYearPicture;
+  else {
+    const t = v.threeYearPicture;
+    if (typeof t.futureDate !== 'string') t.futureDate = '';
+    if (typeof t.revenue !== 'string') t.revenue = '';
+    if (typeof t.profit !== 'string') t.profit = '';
+    if (!Array.isArray(t.measurables)) t.measurables = def.threeYearPicture.measurables;
+    if (typeof t.whatDoesItLookLike !== 'string') t.whatDoesItLookLike = '';
+  }
+  if (!v.oneYearPlan || typeof v.oneYearPlan !== 'object') v.oneYearPlan = def.oneYearPlan;
+  else {
+    const p = v.oneYearPlan;
+    if (typeof p.futureDate !== 'string') p.futureDate = '';
+    if (typeof p.revenue !== 'string') p.revenue = '';
+    if (typeof p.profit !== 'string') p.profit = '';
+    if (!Array.isArray(p.goals)) p.goals = def.oneYearPlan.goals;
+  }
+  if (!Array.isArray(v.rocks)) v.rocks = def.rocks;
+  if (!Array.isArray(v.issues)) v.issues = def.issues;
+}
+
+function vtoGet(path) {
+  const parts = path.split('.');
+  let cur = state.vto;
+  for (const p of parts) {
+    if (cur == null) return undefined;
+    cur = cur[p];
+  }
+  return cur;
+}
+
+function vtoSetField(path, value) {
+  const parts = path.split('.');
+  const last = parts.pop();
+  let cur = state.vto;
+  for (const p of parts) cur = cur[p];
+  cur[last] = value;
+}
+
+function vtoSetListItem(path, idx, value) {
+  const arr = vtoGet(path);
+  if (Array.isArray(arr) && idx >= 0 && idx < arr.length) arr[idx] = value;
+}
+
+function vtoAddListItem(path) {
+  const arr = vtoGet(path);
+  if (!Array.isArray(arr)) return;
+  arr.push('');
+  saveState();
+  const newIdx = arr.length - 1;
+  renderContent();
+  setTimeout(function(){
+    const el = document.querySelector('[data-vto-key="' + path + '"][data-vto-idx="' + newIdx + '"]');
+    if (el) el.focus();
+  }, 30);
+}
+
+function vtoRemoveListItem(path, idx) {
+  const arr = vtoGet(path);
+  if (!Array.isArray(arr)) return;
+  arr.splice(idx, 1);
+  saveState();
+  renderContent();
+}
+
+function vtoList(path, placeholder, addLabel) {
+  const arr = vtoGet(path) || [];
+  const rows = arr.map(function(val, i) {
+    return '<div class="vto-row">' +
+      '<input type="text" value="' + esc(val) + '" placeholder="' + esc(placeholder) + '"' +
+      ' data-vto-key="' + path + '" data-vto-idx="' + i + '"' +
+      ' oninput="vtoSetListItem(\'' + path + '\',' + i + ',this.value)"' +
+      ' onblur="saveState()">' +
+      '<button type="button" class="btn-del" onclick="vtoRemoveListItem(\'' + path + '\',' + i + ')">×</button>' +
+    '</div>';
+  }).join('');
+  return rows +
+    '<button type="button" class="btn-add" style="margin-top:10px;" onclick="vtoAddListItem(\'' + path + '\')">' + esc(addLabel) + '</button>';
+}
+
+function vtoCard(n, title, helper, body) {
+  return `
+    <div class="vto-card">
+      <div class="vto-card-header">
+        <span class="vto-num">${n}</span>
+        <div>
+          <h3>${title}</h3>
+          <div class="vto-helper">${helper}</div>
+        </div>
+      </div>
+      <div class="vto-card-body">${body}</div>
+    </div>`;
+}
+
+function renderVTO() {
+  sanitizeVto();
+  const v = state.vto;
+
+  const coreValuesBody = vtoList('coreValues', 'Core value...', '+ Add Core Value');
+
+  const coreFocusBody = `
+    <div class="vto-two-col">
+      <div>
+        <label class="vto-field-label">Purpose / Cause / Passion</label>
+        <textarea placeholder="Why does your company exist?"
+          oninput="vtoSetField('coreFocus.purpose', this.value)"
+          onblur="saveState()">${esc(v.coreFocus.purpose)}</textarea>
+      </div>
+      <div>
+        <label class="vto-field-label">Our Niche</label>
+        <textarea placeholder="What you do best"
+          oninput="vtoSetField('coreFocus.niche', this.value)"
+          onblur="saveState()">${esc(v.coreFocus.niche)}</textarea>
+      </div>
+    </div>`;
+
+  const tenYearBody = `
+    <textarea style="min-height:90px;" placeholder="Your long-term, big, hairy, audacious goal..."
+      oninput="vtoSetField('tenYearTarget', this.value)"
+      onblur="saveState()">${esc(v.tenYearTarget)}</textarea>`;
+
+  const marketingBody = `
+    <label class="vto-field-label">Target Market / "The List"</label>
+    <textarea placeholder="Who are your ideal customers?"
+      oninput="vtoSetField('marketingStrategy.targetMarket', this.value)"
+      onblur="saveState()">${esc(v.marketingStrategy.targetMarket)}</textarea>
+    <label class="vto-field-label" style="margin-top:14px;">Three Uniques</label>
+    ${vtoList('marketingStrategy.threeUniques', 'What makes you unique...', '+ Add Unique')}
+    <label class="vto-field-label" style="margin-top:14px;">Proven Process</label>
+    <textarea placeholder="Your signature process or approach"
+      oninput="vtoSetField('marketingStrategy.provenProcess', this.value)"
+      onblur="saveState()">${esc(v.marketingStrategy.provenProcess)}</textarea>
+    <label class="vto-field-label" style="margin-top:14px;">Guarantee</label>
+    <textarea placeholder="What you guarantee to every client"
+      oninput="vtoSetField('marketingStrategy.guarantee', this.value)"
+      onblur="saveState()">${esc(v.marketingStrategy.guarantee)}</textarea>`;
+
+  const threeYearBody = `
+    <label class="vto-field-label">Future Date</label>
+    <input type="text" placeholder="e.g. December 31, 2028" value="${esc(v.threeYearPicture.futureDate)}"
+      oninput="vtoSetField('threeYearPicture.futureDate', this.value)"
+      onblur="saveState()">
+    <div class="vto-two-col" style="margin-top:14px;">
+      <div>
+        <label class="vto-field-label">Revenue</label>
+        <input type="text" placeholder="$" value="${esc(v.threeYearPicture.revenue)}"
+          oninput="vtoSetField('threeYearPicture.revenue', this.value)"
+          onblur="saveState()">
+      </div>
+      <div>
+        <label class="vto-field-label">Profit</label>
+        <input type="text" placeholder="$ or %" value="${esc(v.threeYearPicture.profit)}"
+          oninput="vtoSetField('threeYearPicture.profit', this.value)"
+          onblur="saveState()">
+      </div>
+    </div>
+    <label class="vto-field-label" style="margin-top:14px;">Measurables</label>
+    ${vtoList('threeYearPicture.measurables', 'Key metric...', '+ Add Measurable')}
+    <label class="vto-field-label" style="margin-top:14px;">What Does It Look Like?</label>
+    <textarea style="min-height:100px;" placeholder="Paint the picture of the business in 3 years..."
+      oninput="vtoSetField('threeYearPicture.whatDoesItLookLike', this.value)"
+      onblur="saveState()">${esc(v.threeYearPicture.whatDoesItLookLike)}</textarea>`;
+
+  const oneYearBody = `
+    <label class="vto-field-label">Future Date</label>
+    <input type="text" placeholder="e.g. December 31, 2026" value="${esc(v.oneYearPlan.futureDate)}"
+      oninput="vtoSetField('oneYearPlan.futureDate', this.value)"
+      onblur="saveState()">
+    <div class="vto-two-col" style="margin-top:14px;">
+      <div>
+        <label class="vto-field-label">Revenue</label>
+        <input type="text" placeholder="$" value="${esc(v.oneYearPlan.revenue)}"
+          oninput="vtoSetField('oneYearPlan.revenue', this.value)"
+          onblur="saveState()">
+      </div>
+      <div>
+        <label class="vto-field-label">Profit</label>
+        <input type="text" placeholder="$ or %" value="${esc(v.oneYearPlan.profit)}"
+          oninput="vtoSetField('oneYearPlan.profit', this.value)"
+          onblur="saveState()">
+      </div>
+    </div>
+    <label class="vto-field-label" style="margin-top:14px;">Goals for the Year</label>
+    ${vtoList('oneYearPlan.goals', 'Annual goal...', '+ Add Goal')}`;
+
+  const rocksBody = vtoList('rocks', 'Rock for this quarter...', '+ Add Rock');
+  const issuesBody = vtoList('issues', 'Long-term issue...', '+ Add Issue');
+
+  return `
+    <div class="vto-container">
+      <div class="vto-banner vto-banner-vision">VISION</div>
+      ${vtoCard(1, 'Core Values', '3-7 values that define your culture', coreValuesBody)}
+      ${vtoCard(2, 'Core Focus', 'What drives you and what you do best', coreFocusBody)}
+      ${vtoCard(3, '10-Year Target', 'Your big, hairy, audacious goal', tenYearBody)}
+      ${vtoCard(4, 'Marketing Strategy', 'How you differentiate and win customers', marketingBody)}
+      <div class="vto-banner vto-banner-traction">TRACTION</div>
+      ${vtoCard(5, '3-Year Picture', "Where you'll be in 3 years", threeYearBody)}
+      ${vtoCard(6, '1-Year Plan', "This year's priorities to hit your 3-year picture", oneYearBody)}
+      ${vtoCard(7, 'Quarterly Rocks', 'The 3-7 most important things for this quarter', rocksBody)}
+      ${vtoCard(8, 'Issues List', "Long-term issues to solve — not this quarter's IDS list", issuesBody)}
+    </div>`;
+}
+
+// ──────────────────────────────────────────────────────────
+// DATA MANAGEMENT
+// ──────────────────────────────────────────────────────────
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  const d = new Date().toISOString().slice(0,10);
+  a.download = `L10-Meeting-${d}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importData() {
+  document.getElementById("importInput").click();
+}
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      Object.assign(state, imported);
+      state.meetingStarted = false;
+      state.timerRunning = false;
+      state.timeLeft = SECTIONS[state.activeSection].minutes * 60;
+      saveState();
+      renderNav();
+      renderContent();
+      updateTimerUI();
+      alert("Data imported successfully!");
+    } catch { alert("Invalid file."); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+}
+
+async function newMeeting() {
+  if (!confirm("Start a new meeting? This will reset segue notes, rating, and cascading messages but keep your scorecard, rocks, to-dos, and issues.")) return;
+
+  // Auto-log the current meeting to SharePoint before clearing (if signed in)
+  if (msalAccount) {
+    try { await logMeeting(); } catch (err) { console.warn("Meeting log failed:", err); }
+  }
+
+  state.segueNotes = "";
+  state.concludeRating = 0;
+  state.concludeMessages = "";
+  state.activeSection = 0;
+  state.meetingStarted = false;
+  state.timerRunning = false;
+  state.timeLeft = SECTIONS[0].minutes * 60;
+  clearInterval(timerInterval);
+  // Mark completed todos
+  state.todos = state.todos.filter(t => !t.done);
+  // Reset issue movedToTodo flags
+  state.issues.forEach(i => { i.movedToTodo = false; });
+  saveState();
+  document.getElementById("startArea").style.display = "";
+  document.getElementById("timerArea").style.display = "none";
+  document.getElementById("progressBar").style.display = "none";
+  renderNav();
+  renderContent();
+
+  // Sync the cleared state upstream
+  if (msalAccount) {
+    try { await syncNow(); } catch (err) { console.warn("Sync after newMeeting failed:", err); }
+  }
+}
+
+function clearAllData() {
+  if (!confirm("This will delete ALL meeting data. Are you sure?")) return;
+  localStorage.removeItem("eos-l10-data");
+  location.reload();
+}
+
+// ──────────────────────────────────────────────────────────
+// SHAREPOINT INTEGRATION
+// ──────────────────────────────────────────────────────────
+const MSAL_CONFIG = {
+  auth: {
+    clientId: "90cf0186-0ae6-48ed-b6ce-d894df843f14",
+    authority: "https://login.microsoftonline.com/686a07f9-8f53-46b1-928c-719ae4b6bb21",
+    redirectUri: "https://constructivmc.sharepoint.com/sites/ConstructivFinancials",
+  },
+  cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
+};
+const GRAPH_SCOPES = [
+  "https://graph.microsoft.com/Sites.ReadWrite.All",
+  "https://graph.microsoft.com/Files.ReadWrite.All",
+  "https://graph.microsoft.com/User.Read",
+];
+const SP_HOSTNAME = "constructivmc.sharepoint.com";
+const SP_SITE_PATH = "/sites/ConstructivFinancials";
+
+let msalInstance = null;
+let msalAccount = null;
+let lastToken = null;
+let siteIdCache = null;
+let listIdCache = {};
+let lastSyncedAt = null;
+let hasPendingChanges = false;
+let isSyncing = false;
+
+const SP_LISTS = {
+  scorecard: { name: "EOS_Scorecard", columns: [ { name: "Goal", text: {} }, { name: "Actual", text: {} }, { name: "Owner", text: {} } ] },
+  rocks: { name: "EOS_Rocks", columns: [ { name: "Owner", text: {} }, { name: "OnTrack", boolean: {} } ] },
+  todos: { name: "EOS_ToDos", columns: [ { name: "Owner", text: {} }, { name: "DueDate", text: {} }, { name: "Done", boolean: {} } ] },
+  issues: { name: "EOS_Issues", columns: [ { name: "Priority", number: {} }, { name: "Phase", text: {} }, { name: "Solution", text: { allowMultipleLines: true } }, { name: "MovedToTodo", boolean: {} }, { name: "SourceRockId", number: {} } ] },
+  headlines: { name: "EOS_Headlines", columns: [ { name: "HeadlineType", text: {} } ] },
+  orgChart: { name: "EOS_OrgChart", columns: [ { name: "PersonName", text: {} }, { name: "ParentNodeId", number: {} }, { name: "Responsibilities", text: { allowMultipleLines: true } } ] },
+  vto: { name: "EOS_VTO", columns: [ { name: "FieldValue", text: { allowMultipleLines: true } } ] },
+  meetingLog: { name: "EOS_MeetingLog", columns: [ { name: "Rating", number: {} }, { name: "CascadingMessages", text: { allowMultipleLines: true } }, { name: "SegueNotes", text: { allowMultipleLines: true } } ] },
+};
+
+const SIMPLE_LIST_CONVERTERS = {
+  scorecard: {
+    toFields: r => ({ Title: r.metric || "", Goal: r.goal || "", Actual: r.actual || "", Owner: r.owner || "" }),
+    fromFields: f => ({ metric: f.Title || "", goal: f.Goal || "", actual: f.Actual || "", owner: f.Owner || "" }),
+    get: () => state.scorecard, set: arr => { state.scorecard = arr; },
+  },
+  rocks: {
+    toFields: r => ({ Title: r.text || "", Owner: r.owner || "", OnTrack: !!r.onTrack }),
+    fromFields: f => ({ text: f.Title || "", owner: f.Owner || "", onTrack: !!f.OnTrack }),
+    get: () => state.rocks, set: arr => { state.rocks = arr; },
+  },
+  todos: {
+    toFields: t => ({ Title: t.text || "", Owner: t.owner || "", DueDate: t.due || "", Done: !!t.done }),
+    fromFields: f => ({ text: f.Title || "", owner: f.Owner || "", due: f.DueDate || "", done: !!f.Done }),
+    get: () => state.todos, set: arr => { state.todos = arr; },
+  },
+  issues: {
+    toFields: i => ({
+      Title: i.text || "",
+      Priority: Number(i.priority) || 1,
+      Phase: i.phase || "identify",
+      Solution: i.solution || "",
+      MovedToTodo: !!i.movedToTodo,
+      SourceRockId: i.sourceRockId == null ? null : Number(i.sourceRockId),
+    }),
+    fromFields: f => {
+      const rec = {
+        text: f.Title || "",
+        priority: Number(f.Priority) || 1,
+        phase: f.Phase || "identify",
+        solution: f.Solution || "",
+        movedToTodo: !!f.MovedToTodo,
+      };
+      if (f.SourceRockId != null && f.SourceRockId !== "") rec.sourceRockId = Number(f.SourceRockId);
+      return rec;
+    },
+    get: () => state.issues, set: arr => { state.issues = arr; },
+  },
+  headlines: {
+    toFields: h => ({ Title: h.text || "", HeadlineType: h.type || "customer" }),
+    fromFields: f => ({ text: f.Title || "", type: f.HeadlineType || "customer" }),
+    get: () => state.headlines, set: arr => { state.headlines = arr; },
+  },
+};
+
+const VTO_FIELDS = [
+  "coreValues",
+  "coreFocus.purpose", "coreFocus.niche",
+  "tenYearTarget",
+  "marketingStrategy.targetMarket", "marketingStrategy.threeUniques", "marketingStrategy.provenProcess", "marketingStrategy.guarantee",
+  "threeYearPicture.futureDate", "threeYearPicture.revenue", "threeYearPicture.profit", "threeYearPicture.measurables", "threeYearPicture.whatDoesItLookLike",
+  "oneYearPlan.futureDate", "oneYearPlan.revenue", "oneYearPlan.profit", "oneYearPlan.goals",
+  "rocks", "issues",
+];
+const VTO_ARRAY_FIELDS = new Set(["coreValues","marketingStrategy.threeUniques","threeYearPicture.measurables","oneYearPlan.goals","rocks","issues"]);
+
+function ensureMsal() {
+  if (msalInstance) return true;
+  if (typeof msal === 'undefined') return false;
+  try {
+    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+    const accts = msalInstance.getAllAccounts();
+    if (accts && accts.length) msalAccount = accts[0];
+    return true;
+  } catch (err) {
+    console.error("MSAL init failed:", err);
+    return false;
+  }
+}
+
+async function signIn() {
+  if (!ensureMsal()) { showToast("Microsoft sign-in library is still loading — try again in a moment", "error"); return; }
+  try {
+    const res = await msalInstance.loginPopup({ scopes: GRAPH_SCOPES, prompt: "select_account" });
+    if (res && res.account) {
+      msalAccount = res.account;
+      updateAuthUI();
+      showToast("Signed in as " + (msalAccount.name || msalAccount.username), "ok");
+      // Auto-sync on successful sign in
+      syncNow();
+    }
+  } catch (err) {
+    console.error("Sign in failed:", err);
+    showToast("Sign in failed: " + (err.errorMessage || err.message || "unknown"), "error");
+  }
+}
+
+async function signOut() {
+  if (!msalInstance || !msalAccount) return;
+  try { await msalInstance.logoutPopup({ account: msalAccount }); } catch (err) { console.warn("Sign out:", err); }
+  msalAccount = null;
+  lastToken = null;
+  siteIdCache = null;
+  listIdCache = {};
+  lastSyncedAt = null;
+  hasPendingChanges = false;
+  updateAuthUI();
+  showToast("Signed out", "ok");
+}
+
+async function getToken() {
+  if (!ensureMsal()) throw new Error("Auth library not loaded");
+  if (!msalAccount) throw new Error("Not signed in");
+  try {
+    const res = await msalInstance.acquireTokenSilent({ scopes: GRAPH_SCOPES, account: msalAccount });
+    lastToken = res.accessToken;
+    return lastToken;
+  } catch (err) {
+    console.warn("Silent token refresh failed:", err);
+    throw new Error("Session expired — please sign in again");
+  }
+}
+
+async function graph(method, url, body) {
+  const token = await getToken();
+  const headers = { "Authorization": "Bearer " + token };
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const res = await fetch(url, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error("Graph " + method + " " + res.status + ": " + txt.slice(0, 200));
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+async function getSiteId() {
+  if (siteIdCache) return siteIdCache;
+  const url = "https://graph.microsoft.com/v1.0/sites/" + SP_HOSTNAME + ":" + SP_SITE_PATH;
+  const site = await graph("GET", url);
+  siteIdCache = site.id;
+  return siteIdCache;
+}
+
+async function findListId(displayName) {
+  if (listIdCache[displayName]) return listIdCache[displayName];
+  const siteId = await getSiteId();
+  const url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(displayName) + "'";
+  const res = await graph("GET", url);
+  if (res.value && res.value.length) {
+    listIdCache[displayName] = res.value[0].id;
+    return listIdCache[displayName];
+  }
+  return null;
+}
+
+async function ensureList(key) {
+  const def = SP_LISTS[key];
+  if (!def) throw new Error("Unknown list key: " + key);
+  let id = await findListId(def.name);
+  if (id) return id;
+  const siteId = await getSiteId();
+  const body = { displayName: def.name, list: { template: "genericList" }, columns: def.columns };
+  const created = await graph("POST", "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists", body);
+  listIdCache[def.name] = created.id;
+  return created.id;
+}
+
+async function graphListItems(listId) {
+  const siteId = await getSiteId();
+  let url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items?expand=fields&$top=200";
+  const out = [];
+  while (url) {
+    const res = await graph("GET", url);
+    for (const it of (res.value || [])) out.push(it);
+    url = res["@odata.nextLink"] || null;
+  }
+  return out;
+}
+
+async function graphCreateItem(listId, fields) {
+  const siteId = await getSiteId();
+  return await graph("POST", "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items", { fields });
+}
+
+async function graphUpdateItem(listId, itemId, fields) {
+  const siteId = await getSiteId();
+  return await graph("PATCH", "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields", fields);
+}
+
+async function syncSimpleList(key) {
+  const conv = SIMPLE_LIST_CONVERTERS[key];
+  const listId = await ensureList(key);
+  const spItems = await graphListItems(listId);
+  const spIdSet = new Set(spItems.map(it => String(it.id)));
+  const localArr = conv.get() || [];
+
+  // Local-only = items whose id doesn't match any SP item id
+  const localOnly = localArr.filter(r => !spIdSet.has(String(r.id)));
+
+  // Rebuild from SP (SP wins)
+  const newArr = spItems.map(item => {
+    const rec = conv.fromFields(item.fields || {});
+    rec.id = Number(item.id);
+    if (rec.id >= uid) uid = rec.id + 1;
+    return rec;
+  });
+
+  // Push local-only items
+  for (const r of localOnly) {
+    try {
+      const created = await graphCreateItem(listId, conv.toFields(r));
+      const newRec = conv.fromFields(created.fields || {});
+      newRec.id = Number(created.id);
+      if (newRec.id >= uid) uid = newRec.id + 1;
+      newArr.push(newRec);
+    } catch (err) {
+      console.warn(key + " push failed:", err);
+    }
+  }
+
+  conv.set(newArr);
+}
+
+async function syncOrgChartList() {
+  const listId = await ensureList('orgChart');
+  const spItems = await graphListItems(listId);
+  const spIdSet = new Set(spItems.map(it => String(it.id)));
+  const localArr = state.orgChart || [];
+  const localOnly = localArr.filter(n => !spIdSet.has(String(n.id)));
+
+  // Rebuild from SP using SP item id as local node id. ParentNodeId references another SP id.
+  const newArr = spItems.map(item => {
+    const f = item.fields || {};
+    const id = Number(item.id);
+    if (id >= uid) uid = id + 1;
+    return {
+      id,
+      title: f.Title || "",
+      name: f.PersonName || "",
+      parentId: f.ParentNodeId == null || f.ParentNodeId === "" ? null : Number(f.ParentNodeId),
+      responsibilities: (f.Responsibilities || "").split(";").map(s => s.trim()).filter(s => s.length > 0),
+    };
+  });
+
+  // Push local-only nodes — parents first so child ParentNodeId references the newly-assigned SP id
+  const localById = {};
+  for (const n of localOnly) localById[n.id] = n;
+  const order = [];
+  const visited = new Set();
+  function visit(n) {
+    if (visited.has(n.id)) return;
+    if (n.parentId != null && localById[n.parentId]) visit(localById[n.parentId]);
+    visited.add(n.id);
+    order.push(n);
+  }
+  for (const n of localOnly) visit(n);
+
+  const oldToNewId = {};
+  for (const n of order) {
+    let spParentId = null;
+    if (n.parentId != null) {
+      if (oldToNewId[n.parentId] != null) spParentId = oldToNewId[n.parentId];
+      else if (spIdSet.has(String(n.parentId))) spParentId = Number(n.parentId);
+    }
+    try {
+      const body = {
+        Title: n.title || "",
+        PersonName: n.name || "",
+        ParentNodeId: spParentId,
+        Responsibilities: Array.isArray(n.responsibilities) ? n.responsibilities.join(";") : "",
+      };
+      const created = await graphCreateItem(listId, body);
+      const newId = Number(created.id);
+      if (newId >= uid) uid = newId + 1;
+      oldToNewId[n.id] = newId;
+      newArr.push({
+        id: newId,
+        title: n.title || "",
+        name: n.name || "",
+        parentId: spParentId,
+        responsibilities: Array.isArray(n.responsibilities) ? n.responsibilities.slice() : [],
+      });
+    } catch (err) {
+      console.warn("orgChart push failed for node " + n.id + ":", err);
+    }
+  }
+
+  state.orgChart = newArr;
+  const validIds = new Set(newArr.map(n => n.id));
+  state.orgCollapsed = (state.orgCollapsed || []).filter(x => validIds.has(x));
+}
+
+async function syncVtoList() {
+  const listId = await ensureList('vto');
+  const items = await graphListItems(listId);
+  const byTitle = {};
+  for (const it of items) byTitle[(it.fields && it.fields.Title) || ""] = it;
+
+  // Pull: apply SP values to local state
+  sanitizeVto();
+  for (const path of VTO_FIELDS) {
+    const existing = byTitle[path];
+    if (!existing) continue;
+    const raw = (existing.fields && existing.fields.FieldValue) || "";
+    if (VTO_ARRAY_FIELDS.has(path)) {
+      vtoSetField(path, raw ? raw.split(";") : []);
+    } else {
+      vtoSetField(path, raw);
+    }
+  }
+
+  // Push: upsert every VTO field so SP always reflects local state
+  for (const path of VTO_FIELDS) {
+    const val = vtoGet(path);
+    const strVal = Array.isArray(val) ? val.join(";") : (val == null ? "" : String(val));
+    try {
+      if (byTitle[path]) {
+        await graphUpdateItem(listId, byTitle[path].id, { FieldValue: strVal });
+      } else {
+        await graphCreateItem(listId, { Title: path, FieldValue: strVal });
+      }
+    } catch (err) {
+      console.warn("VTO sync failed for " + path + ":", err);
+    }
+  }
+}
+
+async function syncNow() {
+  if (!msalAccount) { showToast("Sign in with Microsoft to sync", "error"); return; }
+  if (isSyncing) return;
+  isSyncing = true;
+  updateAuthUI();
+  try {
+    // Ensure all lists exist
+    for (const key of Object.keys(SP_LISTS)) await ensureList(key);
+    // Simple lists
+    for (const key of Object.keys(SIMPLE_LIST_CONVERTERS)) await syncSimpleList(key);
+    // Special cases
+    await syncOrgChartList();
+    await syncVtoList();
+
+    try { localStorage.setItem("eos-l10-data", JSON.stringify(state)); } catch {}
+    lastSyncedAt = new Date();
+    hasPendingChanges = false;
+    showToast("Synced successfully", "ok");
+    renderContent();
+  } catch (err) {
+    console.error("Sync failed:", err);
+    const msg = err && err.message ? err.message : "unknown";
+    if (/sign in again/i.test(msg)) showToast("Session expired — please sign in again", "error");
+    else if (/NetworkError|Failed to fetch/i.test(msg)) showToast("Working offline — changes saved locally", "error");
+    else showToast("Sync failed: " + msg, "error");
+  } finally {
+    isSyncing = false;
+    updateAuthUI();
+  }
+}
+
+async function logMeeting() {
+  if (!msalAccount) return;
+  try {
+    const listId = await ensureList('meetingLog');
+    const dateStr = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
+    await graphCreateItem(listId, {
+      Title: dateStr,
+      Rating: Number(state.concludeRating) || 0,
+      CascadingMessages: state.concludeMessages || "",
+      SegueNotes: state.segueNotes || "",
+    });
+    showToast("Meeting archived to SharePoint", "ok");
+  } catch (err) {
+    console.warn("logMeeting failed:", err);
+    showToast("Could not archive meeting: " + (err.message || ""), "error");
+  }
+}
+
+async function fetchMeetingHistory() {
+  if (!msalAccount) return [];
+  try {
+    const listId = await ensureList('meetingLog');
+    const items = await graphListItems(listId);
+    return items.map(it => {
+      const f = it.fields || {};
+      return {
+        date: f.Title || "",
+        rating: Number(f.Rating) || 0,
+        messages: f.CascadingMessages || "",
+        segue: f.SegueNotes || "",
+        created: it.createdDateTime || "",
+      };
+    }).sort((a, b) => (b.created).localeCompare(a.created));
+  } catch (err) {
+    console.warn("fetchMeetingHistory failed:", err);
+    showToast("Could not load history: " + (err.message || ""), "error");
+    return [];
+  }
+}
+
+async function showMeetingHistory() {
+  if (!msalAccount) {
+    showModal("Meeting History", '<p style="color:#6b7094; font-size:14px;">Sign in with Microsoft to view past meetings from SharePoint.</p>');
+    return;
+  }
+  showModal("Meeting History", '<p style="color:#6b7094; font-size:14px;">Loading…</p>');
+  const items = await fetchMeetingHistory();
+  const body = document.querySelector('#appModal .app-modal-body');
+  if (!body) return;
+  if (!items.length) {
+    body.innerHTML = '<p style="color:#6b7094; font-size:14px;">No past meetings logged yet. Clicking "New Meeting" archives the current one.</p>';
+    return;
+  }
+  const rows = items.map(m => `
+    <tr>
+      <td>${esc(m.date)}</td>
+      <td style="text-align:center; font-weight:700;">${m.rating || "—"}</td>
+      <td style="color:#6b7094; font-size:13px;">${esc((m.messages || "").slice(0, 80))}${(m.messages || "").length > 80 ? "…" : ""}</td>
+    </tr>`).join("");
+  body.innerHTML = `
+    <table class="meeting-history-table">
+      <thead><tr><th>Date</th><th style="text-align:center;">Rating</th><th>Cascading Messages</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── UI helpers ──
+function markSpPending() {
+  if (msalAccount && !isSyncing) {
+    hasPendingChanges = true;
+    updateAuthUI();
+  }
+}
+
+function updateAuthUI() {
+  const signInBtn = document.getElementById('btnSignIn');
+  const userBlock = document.getElementById('userBlock');
+  const userName = document.getElementById('userName');
+  const syncBtn = document.getElementById('btnSync');
+  const footerBadge = document.getElementById('footerBadge');
+
+  if (msalAccount) {
+    if (signInBtn) signInBtn.style.display = 'none';
+    if (userBlock) { userBlock.style.display = 'flex'; if (userName) userName.textContent = msalAccount.name || msalAccount.username || ''; }
+    if (footerBadge) footerBadge.style.display = 'inline-flex';
+  } else {
+    if (signInBtn) signInBtn.style.display = '';
+    if (userBlock) userBlock.style.display = 'none';
+    if (footerBadge) footerBadge.style.display = 'none';
+  }
+
+  if (syncBtn) {
+    let state = 'gray';
+    let title = 'Sign in to sync with SharePoint';
+    let icon = '☁';
+    if (isSyncing) { state = 'syncing'; title = 'Syncing…'; icon = '⟳'; }
+    else if (msalAccount) {
+      if (hasPendingChanges) { state = 'pending'; title = 'Local changes pending — click to sync'; icon = '☁'; }
+      else if (lastSyncedAt) {
+        state = 'synced';
+        const t = lastSyncedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        title = 'Last synced: ' + t;
+        icon = '☁';
+      } else {
+        state = 'signed';
+        title = 'Click to sync with SharePoint';
+        icon = '☁';
+      }
+    }
+    syncBtn.dataset.state = state;
+    syncBtn.title = title;
+    syncBtn.classList.toggle('spin', state === 'syncing');
+    const span = syncBtn.querySelector('.sync-icon');
+    if (span) span.textContent = icon;
+  }
+}
+
+function showToast(msg, level) {
+  const wrap = document.getElementById('toastWrap');
+  if (!wrap) { console.log("[toast]", msg); return; }
+  const t = document.createElement('div');
+  t.className = 'toast' + (level ? ' ' + level : '');
+  t.textContent = msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 250);
+  }, 3000);
+}
+
+function showModal(title, html) {
+  hideModal();
+  const m = document.createElement('div');
+  m.className = 'app-modal';
+  m.id = 'appModal';
+  m.innerHTML = `
+    <div class="app-modal-inner">
+      <div class="app-modal-header">
+        <h3>${esc(title)}</h3>
+        <button type="button" class="btn-close" onclick="hideModal()" title="Close">×</button>
+      </div>
+      <div class="app-modal-body">${html}</div>
+    </div>`;
+  m.addEventListener('click', function(e) { if (e.target === m) hideModal(); });
+  document.body.appendChild(m);
+}
+function hideModal() {
+  const m = document.getElementById('appModal');
+  if (m && m.parentNode) m.parentNode.removeChild(m);
+}
+
+// ──────────────────────────────────────────────────────────
+// UTIL
+// ──────────────────────────────────────────────────────────
+function esc(s) {
+  if (!s) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ──────────────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────────────
+const totalMins = SECTIONS.filter(s => s.minutes > 0).reduce((s, x) => s + x.minutes, 0);
+const today = new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+document.getElementById("meetingDate").textContent = today + " · " + totalMins + " min agenda";
+
+loadState();
+renderNav();
+renderContent();
+
+// Attempt to restore a cached MSAL session. MSAL is loaded async, so we retry briefly.
+function tryAuthRestore() {
+  if (ensureMsal()) {
+    updateAuthUI();
+    return true;
+  }
+  return false;
+}
+if (!tryAuthRestore()) {
+  const authPoll = setInterval(function() {
+    if (tryAuthRestore()) clearInterval(authPoll);
+  }, 200);
+  setTimeout(function() { clearInterval(authPoll); }, 8000);
+}
+updateAuthUI();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "mimeTypes": {
+    ".html": "text/html; charset=utf-8",
+    ".json": "application/json"
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html"
+  }
+}
