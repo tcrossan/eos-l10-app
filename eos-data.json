@@ -1,5 +1,5 @@
 {
-  "activeSection": 7,
+  "activeSection": 2,
   "scorecard": [
     {
       "id": 1,
@@ -74,6 +74,12 @@
       "id": 110,
       "text": "Finalize ESOP ",
       "owner": "Trent/Cole",
+      "onTrack": true
+    },
+    {
+      "id": 101,
+      "text": "TEST ROCK",
+      "owner": "",
       "onTrack": true
     }
   ],
