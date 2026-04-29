@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Level 10 Meeting — EOS</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" async></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: #f0f1f6; color: #1a1a2e; min-height: 100vh; }
@@ -148,30 +147,37 @@
   .vto-card textarea { width: 100%; min-height: 70px; }
   .vto-card input[type="text"] { width: 100%; }
 
-  /* ── SharePoint integration ── */
-  .btn-signin { background: #fff; color: #1a1a2e; border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; white-space: nowrap; }
-  .btn-signin:hover { background: #e8e9f0; }
-  .btn-signin .ms-logo { display: inline-block; width: 14px; height: 14px; background: linear-gradient(90deg, #f25022 50%, #00a4ef 50%) 0 0 / 100% 50% no-repeat, linear-gradient(90deg, #7fba00 50%, #ffb900 50%) 0 100% / 100% 50% no-repeat; }
-  .user-block { display: none; align-items: center; gap: 10px; color: #fff; font-size: 13px; padding: 0 6px; }
-  .user-block .uname { font-weight: 600; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .user-block .btn-signout { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-  .user-block .btn-signout:hover { background: rgba(255,255,255,0.15); }
-  .btn-sync { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background 0.2s; min-width: 44px; position: relative; }
-  .btn-sync:hover { background: rgba(255,255,255,0.28); }
-  .btn-sync[data-state="gray"] { opacity: 0.75; }
-  .btn-sync[data-state="synced"] { color: #27ae60; background: #fff; border-color: #fff; }
-  .btn-sync[data-state="pending"] { color: #f39c12; background: #fff; border-color: #fff; }
-  .btn-sync.spin .sync-icon { display: inline-block; animation: btnSpin 1s linear infinite; }
-  @keyframes btnSpin { to { transform: rotate(360deg); } }
-  .sp-footer { position: fixed; bottom: 12px; left: 12px; z-index: 20; pointer-events: none; }
-  .sp-footer-badge { display: none; align-items: center; gap: 6px; background: rgba(255,255,255,0.96); border: 1px solid #cdd1e0; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: #4A6FA5; box-shadow: 0 2px 8px rgba(0,0,0,0.08); pointer-events: auto; }
+  /* ── GitHub sync ── */
+  .btn-gh { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 16px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; white-space: nowrap; line-height: 1; }
+  .btn-gh:hover { background: rgba(255,255,255,0.28); }
+  .btn-gh.busy { opacity: 0.55; pointer-events: none; }
+  .btn-gh.disabled { opacity: 0.55; }
+  .btn-gh-settings { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background 0.2s; min-width: 44px; }
+  .btn-gh-settings:hover { background: rgba(255,255,255,0.28); }
+  .gh-footer { position: fixed; bottom: 12px; left: 12px; z-index: 20; pointer-events: none; }
+  .gh-footer-badge { display: none; align-items: center; gap: 6px; background: rgba(255,255,255,0.96); border: 1px solid #cdd1e0; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: #27ae60; box-shadow: 0 2px 8px rgba(0,0,0,0.08); pointer-events: auto; }
 
   /* Toasts */
   #toastWrap { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
   .toast { background: #1a1a2e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); opacity: 0; transform: translateY(10px); transition: opacity 200ms ease, transform 200ms ease; max-width: 360px; }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.ok { background: #27ae60; }
+  .toast.warn { background: #f39c12; }
   .toast.error { background: #e74c3c; }
+
+  /* Settings modal extras */
+  .gh-instructions { background: #f5f6fa; border-radius: 8px; padding: 14px 18px; margin-bottom: 18px; font-size: 13px; line-height: 1.7; }
+  .gh-instructions ol { margin: 8px 0 0 20px; }
+  .gh-instructions code { background: #e4e5ec; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  .gh-token-input { width: 100%; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; padding: 10px 12px; }
+  .gh-modal-actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .btn-primary { background: #1a1a2e; border: none; border-radius: 8px; padding: 9px 20px; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-primary:hover { background: #2a2a4e; }
+  .btn-secondary { background: #fff; border: 1px solid #d0d3e0; border-radius: 8px; padding: 9px 16px; color: #6b7094; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-secondary:hover { border-color: #6b7094; color: #1a1a2e; }
+  .btn-danger-outline { background: #fff; border: 1px solid #e74c3c; border-radius: 8px; padding: 9px 16px; color: #e74c3c; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-danger-outline:hover { background: #e74c3c; color: #fff; }
+  .gh-warn-line { margin-top: 14px; color: #6b7094; font-size: 12px; line-height: 1.6; }
 
   /* Modal */
   .app-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9998; display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -181,11 +187,6 @@
   .app-modal-header .btn-close { border: none; background: transparent; font-size: 22px; color: #6b7094; cursor: pointer; line-height: 1; padding: 4px 8px; }
   .app-modal-body { padding: 20px 24px; overflow: auto; }
 
-  .meeting-history-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .meeting-history-table th { padding: 10px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7094; border-bottom: 2px solid #1a1a2e; }
-  .meeting-history-table td { padding: 10px 12px; border-bottom: 1px solid #e8e9f0; }
-  .btn-history { background: transparent; border: 1px solid #d0d3e0; border-radius: 6px; padding: 6px 14px; font-size: 12px; color: #6b7094; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 12px; transition: all 0.15s; }
-  .btn-history:hover { border-color: #4A6FA5; color: #4A6FA5; }
 </style>
 </head>
 <body>
@@ -211,16 +212,9 @@
           <button class="btn-reset" onclick="resetTimer()">↺ Reset</button>
         </div>
       </div>
-      <button class="btn-signin" id="btnSignIn" onclick="signIn()" title="Sign in with Microsoft to sync with SharePoint">
-        <span class="ms-logo"></span>Sign In
-      </button>
-      <div class="user-block" id="userBlock">
-        <span class="uname" id="userName"></span>
-        <button type="button" class="btn-signout" onclick="signOut()">Sign Out</button>
-      </div>
-      <button class="btn-sync" id="btnSync" data-state="gray" onclick="syncNow()" title="Not signed in">
-        <span class="sync-icon">☁</span>
-      </button>
+      <button class="btn-gh" id="btnGhLoad" onclick="loadFromGitHub(false)" title="Pull the latest data from GitHub">📥 Load</button>
+      <button class="btn-gh" id="btnGhSave" onclick="saveToGitHub()" title="Push the current state to GitHub">📤 Save</button>
+      <button class="btn-gh-settings" id="btnGhSettings" onclick="showSettingsModal()" title="GitHub settings">⚙</button>
       <button class="btn-fs" onclick="toggleFullscreen()" title="Toggle Fullscreen" id="btnFs">⛶</button>
     </div>
   </div>
@@ -259,8 +253,8 @@
 <input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <!-- ── Footer badge ── -->
-<div class="sp-footer">
-  <div class="sp-footer-badge" id="footerBadge">☁️ Connected to SharePoint</div>
+<div class="gh-footer">
+  <div class="gh-footer-badge" id="footerBadge">✓ Connected to GitHub</div>
 </div>
 
 <!-- ── Toasts ── -->
@@ -414,7 +408,6 @@ function nid() {
 // ──────────────────────────────────────────────────────────
 function saveState() {
   try { localStorage.setItem("eos-l10-data", JSON.stringify(state)); } catch {}
-  if (typeof markSpPending === 'function') markSpPending();
 }
 function loadState() {
   try {
@@ -781,8 +774,9 @@ function renderConclude() {
     ${ratingHtml}
     <span style="margin-left:8px; color:#6b7094; font-size:14px;">/10</span>
   </div>
-  <div style="margin-top:24px; border-top:1px solid #e8e9f0; padding-top:16px;">
-    <button type="button" class="btn-history" onclick="showMeetingHistory()">📜 View Meeting History</button>
+  <div style="margin-top:24px; border-top:1px solid #e8e9f0; padding-top:16px; color:#6b7094; font-size:13px;">
+    Past meetings are preserved in the GitHub commit history of <code style="background:#f0f1f6; padding:1px 6px; border-radius:3px;">eos-data.json</code>.
+    <a href="https://github.com/tcrossan/eos-l10-app/commits/main/eos-data.json" target="_blank" rel="noopener" style="color:#4A6FA5;">View on GitHub →</a>
   </div>`;
 }
 
@@ -1507,11 +1501,12 @@ function handleImport(e) {
 }
 
 async function newMeeting() {
-  if (!confirm("Start a new meeting? This will reset segue notes, rating, and cascading messages but keep your scorecard, rocks, to-dos, and issues.")) return;
+  if (!confirm("Start a new meeting? This will reset segue notes, rating, and cascading messages but keep your scorecard, rocks, to-dos, and issues.\n\nThe current meeting will be auto-saved to GitHub first (if a token is set) so it's preserved in commit history.")) return;
 
-  // Auto-log the current meeting to SharePoint before clearing (if signed in)
-  if (msalAccount) {
-    try { await logMeeting(); } catch (err) { console.warn("Meeting log failed:", err); }
+  // Auto-save the current meeting to GitHub before clearing — preserves it in commit history.
+  if (getGhToken()) {
+    try { await saveToGitHub({ silent: false, skipConflictCheck: true }); }
+    catch (err) { console.warn("Auto-save before newMeeting failed:", err); }
   }
 
   state.segueNotes = "";
@@ -1522,9 +1517,7 @@ async function newMeeting() {
   state.timerRunning = false;
   state.timeLeft = SECTIONS[0].minutes * 60;
   clearInterval(timerInterval);
-  // Mark completed todos
   state.todos = state.todos.filter(t => !t.done);
-  // Reset issue movedToTodo flags
   state.issues.forEach(i => { i.movedToTodo = false; });
   saveState();
   document.getElementById("startArea").style.display = "";
@@ -1532,11 +1525,6 @@ async function newMeeting() {
   document.getElementById("progressBar").style.display = "none";
   renderNav();
   renderContent();
-
-  // Sync the cleared state upstream
-  if (msalAccount) {
-    try { await syncNow(); } catch (err) { console.warn("Sync after newMeeting failed:", err); }
-  }
 }
 
 function clearAllData() {
@@ -1546,514 +1534,277 @@ function clearAllData() {
 }
 
 // ──────────────────────────────────────────────────────────
-// SHAREPOINT INTEGRATION
+// GITHUB INTEGRATION
 // ──────────────────────────────────────────────────────────
-const MSAL_CONFIG = {
-  auth: {
-    clientId: "90cf0186-0ae6-48ed-b6ce-d894df843f14",
-    authority: "https://login.microsoftonline.com/686a07f9-8f53-46b1-928c-719ae4b6bb21",
-    // Both URIs must also be registered in the Azure AD app registration.
-    redirectUri: window.location.hostname.includes("sharepoint.com")
-      ? "https://constructivmc.sharepoint.com/sites/ConstructivFinancials"
-      : "https://tcrossan.github.io/eos-l10-app/",
-  },
-  cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
-};
-const GRAPH_SCOPES = [
-  "https://graph.microsoft.com/Sites.ReadWrite.All",
-  "https://graph.microsoft.com/Files.ReadWrite.All",
-  "https://graph.microsoft.com/User.Read",
-];
-const SP_HOSTNAME = "constructivmc.sharepoint.com";
-const SP_SITE_PATH = "/sites/ConstructivFinancials";
+const GH_REPO = "tcrossan/eos-l10-app";
+const GH_FILE = "eos-data.json";
+const GH_RAW_URL = "https://raw.githubusercontent.com/" + GH_REPO + "/main/" + GH_FILE;
+const GH_API_URL = "https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_FILE;
+const GH_COMMITS_URL = "https://api.github.com/repos/" + GH_REPO + "/commits?path=" + GH_FILE + "&per_page=1";
+const GH_TOKEN_KEY = "eos-l10-gh-token";
+const GH_LAST_LOAD_KEY = "eos-l10-gh-last-load";
 
-let msalInstance = null;
-let msalAccount = null;
-let lastToken = null;
-let siteIdCache = null;
-let listIdCache = {};
-let lastSyncedAt = null;
-let hasPendingChanges = false;
-let isSyncing = false;
+let isGhBusy = false;
 
-const SP_LISTS = {
-  scorecard: { name: "EOS_Scorecard", columns: [ { name: "Goal", text: {} }, { name: "Actual", text: {} }, { name: "Owner", text: {} } ] },
-  rocks: { name: "EOS_Rocks", columns: [ { name: "Owner", text: {} }, { name: "OnTrack", boolean: {} } ] },
-  todos: { name: "EOS_ToDos", columns: [ { name: "Owner", text: {} }, { name: "DueDate", text: {} }, { name: "Done", boolean: {} } ] },
-  issues: { name: "EOS_Issues", columns: [ { name: "Priority", number: {} }, { name: "Phase", text: {} }, { name: "Solution", text: { allowMultipleLines: true } }, { name: "MovedToTodo", boolean: {} }, { name: "SourceRockId", number: {} } ] },
-  headlines: { name: "EOS_Headlines", columns: [ { name: "HeadlineType", text: {} } ] },
-  orgChart: { name: "EOS_OrgChart", columns: [ { name: "PersonName", text: {} }, { name: "ParentNodeId", number: {} }, { name: "Responsibilities", text: { allowMultipleLines: true } } ] },
-  vto: { name: "EOS_VTO", columns: [ { name: "FieldValue", text: { allowMultipleLines: true } } ] },
-  meetingLog: { name: "EOS_MeetingLog", columns: [ { name: "Rating", number: {} }, { name: "CascadingMessages", text: { allowMultipleLines: true } }, { name: "SegueNotes", text: { allowMultipleLines: true } } ] },
-};
-
-const SIMPLE_LIST_CONVERTERS = {
-  scorecard: {
-    toFields: r => ({ Title: r.metric || "", Goal: r.goal || "", Actual: r.actual || "", Owner: r.owner || "" }),
-    fromFields: f => ({ metric: f.Title || "", goal: f.Goal || "", actual: f.Actual || "", owner: f.Owner || "" }),
-    get: () => state.scorecard, set: arr => { state.scorecard = arr; },
-  },
-  rocks: {
-    toFields: r => ({ Title: r.text || "", Owner: r.owner || "", OnTrack: !!r.onTrack }),
-    fromFields: f => ({ text: f.Title || "", owner: f.Owner || "", onTrack: !!f.OnTrack }),
-    get: () => state.rocks, set: arr => { state.rocks = arr; },
-  },
-  todos: {
-    toFields: t => ({ Title: t.text || "", Owner: t.owner || "", DueDate: t.due || "", Done: !!t.done }),
-    fromFields: f => ({ text: f.Title || "", owner: f.Owner || "", due: f.DueDate || "", done: !!f.Done }),
-    get: () => state.todos, set: arr => { state.todos = arr; },
-  },
-  issues: {
-    toFields: i => ({
-      Title: i.text || "",
-      Priority: Number(i.priority) || 1,
-      Phase: i.phase || "identify",
-      Solution: i.solution || "",
-      MovedToTodo: !!i.movedToTodo,
-      SourceRockId: i.sourceRockId == null ? null : Number(i.sourceRockId),
-    }),
-    fromFields: f => {
-      const rec = {
-        text: f.Title || "",
-        priority: Number(f.Priority) || 1,
-        phase: f.Phase || "identify",
-        solution: f.Solution || "",
-        movedToTodo: !!f.MovedToTodo,
-      };
-      if (f.SourceRockId != null && f.SourceRockId !== "") rec.sourceRockId = Number(f.SourceRockId);
-      return rec;
-    },
-    get: () => state.issues, set: arr => { state.issues = arr; },
-  },
-  headlines: {
-    toFields: h => ({ Title: h.text || "", HeadlineType: h.type || "customer" }),
-    fromFields: f => ({ text: f.Title || "", type: f.HeadlineType || "customer" }),
-    get: () => state.headlines, set: arr => { state.headlines = arr; },
-  },
-};
-
-const VTO_FIELDS = [
-  "coreValues",
-  "coreFocus.purpose", "coreFocus.niche",
-  "tenYearTarget",
-  "marketingStrategy.targetMarket", "marketingStrategy.threeUniques", "marketingStrategy.provenProcess", "marketingStrategy.guarantee",
-  "threeYearPicture.futureDate", "threeYearPicture.revenue", "threeYearPicture.profit", "threeYearPicture.measurables", "threeYearPicture.whatDoesItLookLike",
-  "oneYearPlan.futureDate", "oneYearPlan.revenue", "oneYearPlan.profit", "oneYearPlan.goals",
-  "rocks", "issues",
-];
-const VTO_ARRAY_FIELDS = new Set(["coreValues","marketingStrategy.threeUniques","threeYearPicture.measurables","oneYearPlan.goals","rocks","issues"]);
-
-function ensureMsal() {
-  if (msalInstance) return true;
-  if (typeof msal === 'undefined') return false;
+function getGhToken() {
+  try { return localStorage.getItem(GH_TOKEN_KEY) || ""; } catch { return ""; }
+}
+function setGhToken(t) {
   try {
-    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
-    const accts = msalInstance.getAllAccounts();
-    if (accts && accts.length) msalAccount = accts[0];
+    if (t) localStorage.setItem(GH_TOKEN_KEY, t);
+    else localStorage.removeItem(GH_TOKEN_KEY);
+  } catch {}
+  updateGitHubUI();
+}
+
+// Pulls the latest commit timestamp for eos-data.json and stores it locally —
+// used as the "last loaded" baseline so Save can warn about overwrites.
+async function fetchLatestCommitDate() {
+  try {
+    const res = await fetch(GH_COMMITS_URL, { cache: "no-store" });
+    if (!res.ok) return null;
+    const commits = await res.json();
+    return commits && commits[0] && commits[0].commit && commits[0].commit.committer
+      ? commits[0].commit.committer.date
+      : null;
+  } catch { return null; }
+}
+
+async function loadFromGitHub(silent) {
+  if (isGhBusy) return false;
+  isGhBusy = true;
+  updateGitHubUI();
+  try {
+    // Cache-bust to dodge raw.githubusercontent.com's 5-min CDN cache.
+    const res = await fetch(GH_RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+    if (res.status === 404) {
+      if (!silent) showToast("⚠ No data file found — starting fresh", "warn", 4000);
+      try { localStorage.removeItem(GH_LAST_LOAD_KEY); } catch {}
+      return false;
+    }
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    // GitHub is the source of truth — overwrite any field present in the file.
+    Object.assign(state, data);
+    sanitizeOrgChart();
+    sanitizeVto();
+    state.timerRunning = false;
+    state.meetingStarted = false;
+    state.timeLeft = SECTIONS[state.activeSection].minutes * 60;
+
+    // Cache locally so we work offline next session.
+    try { localStorage.setItem("eos-l10-data", JSON.stringify(state)); } catch {}
+
+    // Capture the file's commit time so Save can detect concurrent edits.
+    const commitDate = await fetchLatestCommitDate();
+    if (commitDate) { try { localStorage.setItem(GH_LAST_LOAD_KEY, commitDate); } catch {} }
+
+    // Reset the meeting UI to the unstarted state.
+    document.getElementById("startArea").style.display = "";
+    document.getElementById("timerArea").style.display = "none";
+    document.getElementById("progressBar").style.display = "none";
+    clearInterval(timerInterval);
+
+    renderNav();
+    renderContent();
+    updateTimerUI();
+
+    if (!silent) {
+      const friendly = commitDate ? new Date(commitDate).toLocaleString() : "";
+      showToast("✓ Data loaded" + (friendly ? " — " + friendly : ""), "ok");
+    }
     return true;
   } catch (err) {
-    console.error("MSAL init failed:", err);
+    console.warn("loadFromGitHub failed:", err);
+    if (!silent) showToast("✗ Load failed — check your connection", "error", 5000);
+    return false;
+  } finally {
+    isGhBusy = false;
+    updateGitHubUI();
+  }
+}
+
+async function saveToGitHub(opts) {
+  opts = opts || {};
+  const token = getGhToken();
+  if (!token) {
+    showToast("⚠ Save requires GitHub token — click ⚙ to set up", "warn", 5000);
     return false;
   }
-}
+  if (isGhBusy) return false;
 
-async function signIn() {
-  if (!ensureMsal()) { showToast("Microsoft sign-in library is still loading — try again in a moment", "error"); return; }
+  // Conflict check: did someone else commit since we last loaded?
+  if (!opts.skipConflictCheck) {
+    const latest = await fetchLatestCommitDate();
+    let lastLoaded = null;
+    try { lastLoaded = localStorage.getItem(GH_LAST_LOAD_KEY); } catch {}
+    if (latest && lastLoaded && new Date(latest) > new Date(lastLoaded)) {
+      const proceed = confirm(
+        "⚠ Someone else may have saved changes to GitHub more recently than your last Load (" +
+        new Date(latest).toLocaleString() + ").\n\n" +
+        "Click OK to Save anyway and overwrite their changes.\n" +
+        "Click Cancel to stop — then click 📥 Load first."
+      );
+      if (!proceed) return false;
+    }
+  }
+
+  isGhBusy = true;
+  updateGitHubUI();
+
   try {
-    const res = await msalInstance.loginPopup({ scopes: GRAPH_SCOPES, prompt: "select_account" });
-    if (res && res.account) {
-      msalAccount = res.account;
-      updateAuthUI();
-      showToast("Signed in as " + (msalAccount.name || msalAccount.username), "ok");
-      // Auto-sync on successful sign in
-      syncNow();
-    }
-  } catch (err) {
-    console.error("Sign in failed:", err);
-    showToast("Sign in failed: " + (err.errorMessage || err.message || "unknown"), "error");
-  }
-}
-
-async function signOut() {
-  if (!msalInstance || !msalAccount) return;
-  try { await msalInstance.logoutPopup({ account: msalAccount }); } catch (err) { console.warn("Sign out:", err); }
-  msalAccount = null;
-  lastToken = null;
-  siteIdCache = null;
-  listIdCache = {};
-  lastSyncedAt = null;
-  hasPendingChanges = false;
-  updateAuthUI();
-  showToast("Signed out", "ok");
-}
-
-async function getToken() {
-  if (!ensureMsal()) throw new Error("Auth library not loaded");
-  if (!msalAccount) throw new Error("Not signed in");
-  try {
-    const res = await msalInstance.acquireTokenSilent({ scopes: GRAPH_SCOPES, account: msalAccount });
-    lastToken = res.accessToken;
-    return lastToken;
-  } catch (err) {
-    console.warn("Silent token refresh failed:", err);
-    throw new Error("Session expired — please sign in again");
-  }
-}
-
-async function graph(method, url, body) {
-  const token = await getToken();
-  const headers = { "Authorization": "Bearer " + token };
-  if (body !== undefined) headers["Content-Type"] = "application/json";
-  const res = await fetch(url, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error("Graph " + method + " " + res.status + ": " + txt.slice(0, 200));
-  }
-  if (res.status === 204) return null;
-  return res.json();
-}
-
-async function getSiteId() {
-  if (siteIdCache) return siteIdCache;
-  const url = "https://graph.microsoft.com/v1.0/sites/" + SP_HOSTNAME + ":" + SP_SITE_PATH;
-  const site = await graph("GET", url);
-  siteIdCache = site.id;
-  return siteIdCache;
-}
-
-async function findListId(displayName) {
-  if (listIdCache[displayName]) return listIdCache[displayName];
-  const siteId = await getSiteId();
-  const url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists?$filter=displayName eq '" + encodeURIComponent(displayName) + "'";
-  const res = await graph("GET", url);
-  if (res.value && res.value.length) {
-    listIdCache[displayName] = res.value[0].id;
-    return listIdCache[displayName];
-  }
-  return null;
-}
-
-async function ensureList(key) {
-  const def = SP_LISTS[key];
-  if (!def) throw new Error("Unknown list key: " + key);
-  let id = await findListId(def.name);
-  if (id) return id;
-  const siteId = await getSiteId();
-  const body = { displayName: def.name, list: { template: "genericList" }, columns: def.columns };
-  const created = await graph("POST", "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists", body);
-  listIdCache[def.name] = created.id;
-  return created.id;
-}
-
-async function graphListItems(listId) {
-  const siteId = await getSiteId();
-  let url = "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items?expand=fields&$top=200";
-  const out = [];
-  while (url) {
-    const res = await graph("GET", url);
-    for (const it of (res.value || [])) out.push(it);
-    url = res["@odata.nextLink"] || null;
-  }
-  return out;
-}
-
-async function graphCreateItem(listId, fields) {
-  const siteId = await getSiteId();
-  return await graph("POST", "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items", { fields });
-}
-
-async function graphUpdateItem(listId, itemId, fields) {
-  const siteId = await getSiteId();
-  return await graph("PATCH", "https://graph.microsoft.com/v1.0/sites/" + siteId + "/lists/" + listId + "/items/" + itemId + "/fields", fields);
-}
-
-async function syncSimpleList(key) {
-  const conv = SIMPLE_LIST_CONVERTERS[key];
-  const listId = await ensureList(key);
-  const spItems = await graphListItems(listId);
-  const spIdSet = new Set(spItems.map(it => String(it.id)));
-  const localArr = conv.get() || [];
-
-  // Local-only = items whose id doesn't match any SP item id
-  const localOnly = localArr.filter(r => !spIdSet.has(String(r.id)));
-
-  // Rebuild from SP (SP wins)
-  const newArr = spItems.map(item => {
-    const rec = conv.fromFields(item.fields || {});
-    rec.id = Number(item.id);
-    if (rec.id >= uid) uid = rec.id + 1;
-    return rec;
-  });
-
-  // Push local-only items
-  for (const r of localOnly) {
-    try {
-      const created = await graphCreateItem(listId, conv.toFields(r));
-      const newRec = conv.fromFields(created.fields || {});
-      newRec.id = Number(created.id);
-      if (newRec.id >= uid) uid = newRec.id + 1;
-      newArr.push(newRec);
-    } catch (err) {
-      console.warn(key + " push failed:", err);
-    }
-  }
-
-  conv.set(newArr);
-}
-
-async function syncOrgChartList() {
-  const listId = await ensureList('orgChart');
-  const spItems = await graphListItems(listId);
-  const spIdSet = new Set(spItems.map(it => String(it.id)));
-  const localArr = state.orgChart || [];
-  const localOnly = localArr.filter(n => !spIdSet.has(String(n.id)));
-
-  // Rebuild from SP using SP item id as local node id. ParentNodeId references another SP id.
-  const newArr = spItems.map(item => {
-    const f = item.fields || {};
-    const id = Number(item.id);
-    if (id >= uid) uid = id + 1;
-    return {
-      id,
-      title: f.Title || "",
-      name: f.PersonName || "",
-      parentId: f.ParentNodeId == null || f.ParentNodeId === "" ? null : Number(f.ParentNodeId),
-      responsibilities: (f.Responsibilities || "").split(";").map(s => s.trim()).filter(s => s.length > 0),
-    };
-  });
-
-  // Push local-only nodes — parents first so child ParentNodeId references the newly-assigned SP id
-  const localById = {};
-  for (const n of localOnly) localById[n.id] = n;
-  const order = [];
-  const visited = new Set();
-  function visit(n) {
-    if (visited.has(n.id)) return;
-    if (n.parentId != null && localById[n.parentId]) visit(localById[n.parentId]);
-    visited.add(n.id);
-    order.push(n);
-  }
-  for (const n of localOnly) visit(n);
-
-  const oldToNewId = {};
-  for (const n of order) {
-    let spParentId = null;
-    if (n.parentId != null) {
-      if (oldToNewId[n.parentId] != null) spParentId = oldToNewId[n.parentId];
-      else if (spIdSet.has(String(n.parentId))) spParentId = Number(n.parentId);
-    }
-    try {
-      const body = {
-        Title: n.title || "",
-        PersonName: n.name || "",
-        ParentNodeId: spParentId,
-        Responsibilities: Array.isArray(n.responsibilities) ? n.responsibilities.join(";") : "",
-      };
-      const created = await graphCreateItem(listId, body);
-      const newId = Number(created.id);
-      if (newId >= uid) uid = newId + 1;
-      oldToNewId[n.id] = newId;
-      newArr.push({
-        id: newId,
-        title: n.title || "",
-        name: n.name || "",
-        parentId: spParentId,
-        responsibilities: Array.isArray(n.responsibilities) ? n.responsibilities.slice() : [],
-      });
-    } catch (err) {
-      console.warn("orgChart push failed for node " + n.id + ":", err);
-    }
-  }
-
-  state.orgChart = newArr;
-  const validIds = new Set(newArr.map(n => n.id));
-  state.orgCollapsed = (state.orgCollapsed || []).filter(x => validIds.has(x));
-}
-
-async function syncVtoList() {
-  const listId = await ensureList('vto');
-  const items = await graphListItems(listId);
-  const byTitle = {};
-  for (const it of items) byTitle[(it.fields && it.fields.Title) || ""] = it;
-
-  // Pull: apply SP values to local state
-  sanitizeVto();
-  for (const path of VTO_FIELDS) {
-    const existing = byTitle[path];
-    if (!existing) continue;
-    const raw = (existing.fields && existing.fields.FieldValue) || "";
-    if (VTO_ARRAY_FIELDS.has(path)) {
-      vtoSetField(path, raw ? raw.split(";") : []);
-    } else {
-      vtoSetField(path, raw);
-    }
-  }
-
-  // Push: upsert every VTO field so SP always reflects local state
-  for (const path of VTO_FIELDS) {
-    const val = vtoGet(path);
-    const strVal = Array.isArray(val) ? val.join(";") : (val == null ? "" : String(val));
-    try {
-      if (byTitle[path]) {
-        await graphUpdateItem(listId, byTitle[path].id, { FieldValue: strVal });
-      } else {
-        await graphCreateItem(listId, { Title: path, FieldValue: strVal });
-      }
-    } catch (err) {
-      console.warn("VTO sync failed for " + path + ":", err);
-    }
-  }
-}
-
-async function syncNow() {
-  if (!msalAccount) { showToast("Sign in with Microsoft to sync", "error"); return; }
-  if (isSyncing) return;
-  isSyncing = true;
-  updateAuthUI();
-  try {
-    // Ensure all lists exist
-    for (const key of Object.keys(SP_LISTS)) await ensureList(key);
-    // Simple lists
-    for (const key of Object.keys(SIMPLE_LIST_CONVERTERS)) await syncSimpleList(key);
-    // Special cases
-    await syncOrgChartList();
-    await syncVtoList();
-
-    try { localStorage.setItem("eos-l10-data", JSON.stringify(state)); } catch {}
-    lastSyncedAt = new Date();
-    hasPendingChanges = false;
-    showToast("Synced successfully", "ok");
-    renderContent();
-  } catch (err) {
-    console.error("Sync failed:", err);
-    const msg = err && err.message ? err.message : "unknown";
-    if (/sign in again/i.test(msg)) showToast("Session expired — please sign in again", "error");
-    else if (/NetworkError|Failed to fetch/i.test(msg)) showToast("Working offline — changes saved locally", "error");
-    else showToast("Sync failed: " + msg, "error");
-  } finally {
-    isSyncing = false;
-    updateAuthUI();
-  }
-}
-
-async function logMeeting() {
-  if (!msalAccount) return;
-  try {
-    const listId = await ensureList('meetingLog');
-    const dateStr = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
-    await graphCreateItem(listId, {
-      Title: dateStr,
-      Rating: Number(state.concludeRating) || 0,
-      CascadingMessages: state.concludeMessages || "",
-      SegueNotes: state.segueNotes || "",
+    // Step 1: get the current SHA (required when updating an existing file).
+    let sha = null;
+    const metaRes = await fetch(GH_API_URL, {
+      headers: { "Authorization": "token " + token, "Accept": "application/vnd.github+json" },
+      cache: "no-store",
     });
-    showToast("Meeting archived to SharePoint", "ok");
+    if (metaRes.ok) {
+      const meta = await metaRes.json();
+      sha = meta.sha;
+    } else if (metaRes.status === 401 || metaRes.status === 403) {
+      throw new Error("Token rejected — check that it has 'repo' scope (or 'Contents: Read and write' for fine-grained tokens)");
+    } else if (metaRes.status !== 404) {
+      // Anything other than "file doesn't exist yet" is unexpected.
+      throw new Error("Could not read file metadata: HTTP " + metaRes.status);
+    }
+
+    // Step 2: build the payload — strip pure runtime fields so commits stay clean.
+    const toSave = Object.assign({}, state);
+    delete toSave.timerRunning;
+    delete toSave.meetingStarted;
+    delete toSave.timeLeft;
+
+    const json = JSON.stringify(toSave, null, 2);
+    // btoa can't handle non-ASCII directly; this round-trips through UTF-8.
+    const content = btoa(unescape(encodeURIComponent(json)));
+
+    const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    const body = { message: "L10 Meeting Data — " + dateStr, content: content };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(GH_API_URL, {
+      method: "PUT",
+      headers: {
+        "Authorization": "token " + token,
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!putRes.ok) {
+      const errText = await putRes.text().catch(() => "");
+      if (putRes.status === 409) throw new Error("Conflict — Load latest first, then Save");
+      if (putRes.status === 401 || putRes.status === 403) throw new Error("Token rejected — check scopes/expiration");
+      throw new Error("HTTP " + putRes.status + (errText ? ": " + errText.slice(0, 200) : ""));
+    }
+
+    const result = await putRes.json();
+    if (result && result.commit && result.commit.committer && result.commit.committer.date) {
+      try { localStorage.setItem(GH_LAST_LOAD_KEY, result.commit.committer.date); } catch {}
+    }
+
+    showToast("✓ Saved to GitHub", "ok");
+    return true;
   } catch (err) {
-    console.warn("logMeeting failed:", err);
-    showToast("Could not archive meeting: " + (err.message || ""), "error");
+    console.error("saveToGitHub failed:", err);
+    showToast("✗ Save failed — " + (err.message || "check your connection"), "error", 5000);
+    return false;
+  } finally {
+    isGhBusy = false;
+    updateGitHubUI();
   }
 }
 
-async function fetchMeetingHistory() {
-  if (!msalAccount) return [];
-  try {
-    const listId = await ensureList('meetingLog');
-    const items = await graphListItems(listId);
-    return items.map(it => {
-      const f = it.fields || {};
-      return {
-        date: f.Title || "",
-        rating: Number(f.Rating) || 0,
-        messages: f.CascadingMessages || "",
-        segue: f.SegueNotes || "",
-        created: it.createdDateTime || "",
-      };
-    }).sort((a, b) => (b.created).localeCompare(a.created));
-  } catch (err) {
-    console.warn("fetchMeetingHistory failed:", err);
-    showToast("Could not load history: " + (err.message || ""), "error");
-    return [];
-  }
+// ── Settings modal ──
+function showSettingsModal() {
+  const currentToken = getGhToken();
+  const masked = currentToken ? "••••••••••••••••" + currentToken.slice(-4) : "";
+  const html = `
+    <div style="font-size:14px; line-height:1.6;">
+      <p style="margin-bottom:14px;">A GitHub Personal Access Token is required to <strong>Save</strong> data. <strong>Loading</strong> works without one because the repo is public.</p>
+
+      <div class="gh-instructions">
+        <strong>How to get a token:</strong>
+        <ol>
+          <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a></li>
+          <li>Click <strong>Tokens (classic)</strong> → <strong>Generate new token (classic)</strong></li>
+          <li>Note: "EOS L10 App" · choose an expiration</li>
+          <li>Check the <code>repo</code> scope</li>
+          <li>Generate, copy the token, and paste below</li>
+        </ol>
+        <p style="margin-top:10px; color:#6b7094; font-size:12px;">
+          <em>More secure option: use a <strong>fine-grained token</strong> (Settings → Developer settings → Fine-grained tokens) scoped only to <code>${esc(GH_REPO)}</code> with <code>Contents: Read and write</code>. The classic <code>repo</code> scope grants access to all your repos.</em>
+        </p>
+      </div>
+
+      <label style="display:block; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#6b7094; margin-bottom:6px;">GitHub Personal Access Token</label>
+      <input type="password" id="ghTokenInput" class="gh-token-input" placeholder="${currentToken ? esc(masked) : 'ghp_...'}" autocomplete="off">
+      ${currentToken ? '<div style="margin-top:6px; font-size:12px; color:#27ae60;">A token is currently saved. Leave blank to keep it, or paste a new one to replace.</div>' : ''}
+
+      <div class="gh-modal-actions">
+        <button type="button" class="btn-primary" onclick="saveSettingsToken()">Save Token</button>
+        ${currentToken ? '<button type="button" class="btn-danger-outline" onclick="clearSettingsToken()">Remove Token</button>' : ''}
+        <button type="button" class="btn-secondary" onclick="hideModal()" style="margin-left:auto;">Cancel</button>
+      </div>
+
+      <p class="gh-warn-line">
+        ⚠ The token is stored in this browser's localStorage. Anyone who can access this browser profile can read it. Use a token with the narrowest scope and shortest expiration that fits your workflow.
+      </p>
+    </div>`;
+  showModal("⚙ GitHub Settings", html);
+  setTimeout(function(){
+    const input = document.getElementById('ghTokenInput');
+    if (input) input.focus();
+  }, 50);
 }
 
-async function showMeetingHistory() {
-  if (!msalAccount) {
-    showModal("Meeting History", '<p style="color:#6b7094; font-size:14px;">Sign in with Microsoft to view past meetings from SharePoint.</p>');
+function saveSettingsToken() {
+  const input = document.getElementById('ghTokenInput');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) {
+    // Empty input + no existing token = nothing to do; existing token stays.
+    if (!getGhToken()) { showToast("Please paste a token first", "warn"); return; }
+    hideModal();
     return;
   }
-  showModal("Meeting History", '<p style="color:#6b7094; font-size:14px;">Loading…</p>');
-  const items = await fetchMeetingHistory();
-  const body = document.querySelector('#appModal .app-modal-body');
-  if (!body) return;
-  if (!items.length) {
-    body.innerHTML = '<p style="color:#6b7094; font-size:14px;">No past meetings logged yet. Clicking "New Meeting" archives the current one.</p>';
-    return;
-  }
-  const rows = items.map(m => `
-    <tr>
-      <td>${esc(m.date)}</td>
-      <td style="text-align:center; font-weight:700;">${m.rating || "—"}</td>
-      <td style="color:#6b7094; font-size:13px;">${esc((m.messages || "").slice(0, 80))}${(m.messages || "").length > 80 ? "…" : ""}</td>
-    </tr>`).join("");
-  body.innerHTML = `
-    <table class="meeting-history-table">
-      <thead><tr><th>Date</th><th style="text-align:center;">Rating</th><th>Cascading Messages</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  setGhToken(val);
+  hideModal();
+  showToast("✓ Token saved", "ok");
+}
+
+function clearSettingsToken() {
+  if (!confirm("Remove the GitHub token from this browser? You won't be able to Save until you set a new one.")) return;
+  setGhToken("");
+  hideModal();
+  showToast("Token removed", "ok");
 }
 
 // ── UI helpers ──
-function markSpPending() {
-  if (msalAccount && !isSyncing) {
-    hasPendingChanges = true;
-    updateAuthUI();
+function updateGitHubUI() {
+  const hasToken = !!getGhToken();
+  const badge = document.getElementById('footerBadge');
+  if (badge) badge.style.display = hasToken ? 'inline-flex' : 'none';
+
+  const saveBtn = document.getElementById('btnGhSave');
+  if (saveBtn) {
+    saveBtn.classList.toggle('busy', isGhBusy);
+    saveBtn.classList.toggle('disabled', !hasToken);
+    saveBtn.title = isGhBusy
+      ? 'Working…'
+      : (hasToken ? 'Push the current state to GitHub' : 'Set a GitHub token via ⚙ to enable saving');
+  }
+  const loadBtn = document.getElementById('btnGhLoad');
+  if (loadBtn) {
+    loadBtn.classList.toggle('busy', isGhBusy);
+    loadBtn.title = isGhBusy ? 'Working…' : 'Pull the latest data from GitHub';
   }
 }
 
-function updateAuthUI() {
-  const signInBtn = document.getElementById('btnSignIn');
-  const userBlock = document.getElementById('userBlock');
-  const userName = document.getElementById('userName');
-  const syncBtn = document.getElementById('btnSync');
-  const footerBadge = document.getElementById('footerBadge');
-
-  if (msalAccount) {
-    if (signInBtn) signInBtn.style.display = 'none';
-    if (userBlock) { userBlock.style.display = 'flex'; if (userName) userName.textContent = msalAccount.name || msalAccount.username || ''; }
-    if (footerBadge) footerBadge.style.display = 'inline-flex';
-  } else {
-    if (signInBtn) signInBtn.style.display = '';
-    if (userBlock) userBlock.style.display = 'none';
-    if (footerBadge) footerBadge.style.display = 'none';
-  }
-
-  if (syncBtn) {
-    let state = 'gray';
-    let title = 'Sign in to sync with SharePoint';
-    let icon = '☁';
-    if (isSyncing) { state = 'syncing'; title = 'Syncing…'; icon = '⟳'; }
-    else if (msalAccount) {
-      if (hasPendingChanges) { state = 'pending'; title = 'Local changes pending — click to sync'; icon = '☁'; }
-      else if (lastSyncedAt) {
-        state = 'synced';
-        const t = lastSyncedAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        title = 'Last synced: ' + t;
-        icon = '☁';
-      } else {
-        state = 'signed';
-        title = 'Click to sync with SharePoint';
-        icon = '☁';
-      }
-    }
-    syncBtn.dataset.state = state;
-    syncBtn.title = title;
-    syncBtn.classList.toggle('spin', state === 'syncing');
-    const span = syncBtn.querySelector('.sync-icon');
-    if (span) span.textContent = icon;
-  }
-}
-
-function showToast(msg, level) {
+function showToast(msg, level, durationMs) {
   const wrap = document.getElementById('toastWrap');
   if (!wrap) { console.log("[toast]", msg); return; }
   const t = document.createElement('div');
@@ -2061,10 +1812,11 @@ function showToast(msg, level) {
   t.textContent = msg;
   wrap.appendChild(t);
   requestAnimationFrame(() => t.classList.add('show'));
+  const dur = typeof durationMs === 'number' ? durationMs : 3000;
   setTimeout(() => {
     t.classList.remove('show');
     setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 250);
-  }, 3000);
+  }, dur);
 }
 
 function showModal(title, html) {
@@ -2103,25 +1855,14 @@ const totalMins = SECTIONS.filter(s => s.minutes > 0).reduce((s, x) => s + x.min
 const today = new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
 document.getElementById("meetingDate").textContent = today + " · " + totalMins + " min agenda";
 
+// Render from localStorage first so the UI shows immediately, then attempt a silent
+// load from GitHub. If GitHub succeeds, it overwrites and re-renders.
 loadState();
 renderNav();
 renderContent();
+updateGitHubUI();
 
-// Attempt to restore a cached MSAL session. MSAL is loaded async, so we retry briefly.
-function tryAuthRestore() {
-  if (ensureMsal()) {
-    updateAuthUI();
-    return true;
-  }
-  return false;
-}
-if (!tryAuthRestore()) {
-  const authPoll = setInterval(function() {
-    if (tryAuthRestore()) clearInterval(authPoll);
-  }, 200);
-  setTimeout(function() { clearInterval(authPoll); }, 8000);
-}
-updateAuthUI();
+loadFromGitHub(true);
 </script>
 </body>
 </html>
