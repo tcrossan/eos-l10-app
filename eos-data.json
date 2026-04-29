@@ -1,0 +1,220 @@
+{
+  "activeSection": 0,
+  "scorecard": [
+    {
+      "id": 1,
+      "metric": "",
+      "goal": "",
+      "actual": "",
+      "owner": ""
+    }
+  ],
+  "rocks": [
+    {
+      "id": 1,
+      "text": "",
+      "owner": "",
+      "onTrack": true
+    }
+  ],
+  "todos": [],
+  "issues": [],
+  "headlines": [],
+  "segueNotes": "",
+  "concludeRating": 0,
+  "concludeMessages": "",
+  "orgChart": [
+    {
+      "id": 1,
+      "title": "VISIONARY",
+      "name": "",
+      "parentId": null,
+      "responsibilities": [
+        "Company vision & direction",
+        "Culture & core values",
+        "Major business relationships",
+        "R&D and innovation",
+        "Brand strategy"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "GACG",
+      "name": "",
+      "parentId": null,
+      "responsibilities": []
+    },
+    {
+      "id": 3,
+      "title": "FINANCE",
+      "name": "",
+      "parentId": 1,
+      "responsibilities": [
+        "Accounting & reporting",
+        "Budgets & forecasting",
+        "Cash flow management",
+        "AP/AR oversight"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "PROJECT COORDINATION",
+      "name": "",
+      "parentId": 1,
+      "responsibilities": [
+        "Integrator role - harmonize all departments",
+        "Project scheduling & tracking",
+        "Cross-department communication",
+        "Process improvement"
+      ]
+    },
+    {
+      "id": 5,
+      "title": "OPERATIONS",
+      "name": "",
+      "parentId": 1,
+      "responsibilities": [
+        "Field operations oversight",
+        "Subcontractor management",
+        "Resource allocation",
+        "Safety & compliance"
+      ]
+    },
+    {
+      "id": 6,
+      "title": "ESTIMATING",
+      "name": "",
+      "parentId": 1,
+      "responsibilities": [
+        "Bid management",
+        "Takeoffs & proposals",
+        "Cost analysis",
+        "Vendor pricing"
+      ]
+    },
+    {
+      "id": 7,
+      "title": "BUSINESS DEV",
+      "name": "",
+      "parentId": 1,
+      "responsibilities": [
+        "Sales pipeline",
+        "Client relationships",
+        "Marketing strategy",
+        "Proposal coordination"
+      ]
+    },
+    {
+      "id": 8,
+      "title": "HR",
+      "name": "",
+      "parentId": 1,
+      "responsibilities": [
+        "Recruiting & hiring",
+        "Benefits administration",
+        "Employee development",
+        "Culture & retention"
+      ]
+    },
+    {
+      "id": 9,
+      "title": "GC",
+      "name": "",
+      "parentId": 5,
+      "responsibilities": [
+        "General contracting execution",
+        "Subcontractor coordination",
+        "Field supervision"
+      ]
+    },
+    {
+      "id": 10,
+      "title": "PRECON",
+      "name": "",
+      "parentId": 5,
+      "responsibilities": [
+        "Preconstruction planning",
+        "Value engineering",
+        "Buildability reviews",
+        "Scheduling"
+      ]
+    },
+    {
+      "id": 11,
+      "title": "CM",
+      "name": "",
+      "parentId": 5,
+      "responsibilities": [
+        "Construction management",
+        "Site oversight & quality control",
+        "Client coordination",
+        "Safety programs"
+      ]
+    }
+  ],
+  "orgCollapsed": [],
+  "vto": {
+    "coreValues": [
+      "",
+      "",
+      ""
+    ],
+    "coreFocus": {
+      "purpose": "",
+      "niche": ""
+    },
+    "tenYearTarget": "",
+    "marketingStrategy": {
+      "targetMarket": "",
+      "threeUniques": [
+        "",
+        "",
+        ""
+      ],
+      "provenProcess": "",
+      "guarantee": ""
+    },
+    "threeYearPicture": {
+      "futureDate": "",
+      "revenue": "",
+      "profit": "",
+      "measurables": [
+        "",
+        "",
+        ""
+      ],
+      "whatDoesItLookLike": ""
+    },
+    "oneYearPlan": {
+      "futureDate": "",
+      "revenue": "",
+      "profit": "",
+      "goals": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "rocks": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "issues": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  }
+}
