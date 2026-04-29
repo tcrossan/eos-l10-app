@@ -1552,7 +1552,10 @@ const MSAL_CONFIG = {
   auth: {
     clientId: "90cf0186-0ae6-48ed-b6ce-d894df843f14",
     authority: "https://login.microsoftonline.com/686a07f9-8f53-46b1-928c-719ae4b6bb21",
-    redirectUri: "https://constructivmc.sharepoint.com/sites/ConstructivFinancials",
+    // Both URIs must also be registered in the Azure AD app registration.
+    redirectUri: window.location.hostname.includes("sharepoint.com")
+      ? "https://constructivmc.sharepoint.com/sites/ConstructivFinancials"
+      : "https://tcrossan.github.io/eos-l10-app/",
   },
   cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },
 };
