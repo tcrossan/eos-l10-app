@@ -79,13 +79,6 @@
   ],
   "todos": [
     {
-      "id": 115,
-      "text": "Christine to send Town Hall Invite for June 10th ",
-      "owner": "Christine",
-      "due": "2026-06-03",
-      "done": true
-    },
-    {
       "id": 116,
       "text": "Create Town Hall Presentation ",
       "owner": "Trent",
@@ -107,20 +100,6 @@
       "done": false
     },
     {
-      "id": 119,
-      "text": "Christine to make job discription ",
-      "owner": "Christine",
-      "due": "2026-05-01",
-      "done": true
-    },
-    {
-      "id": 120,
-      "text": "Everyone come up with at most 5 words for core values ",
-      "owner": "Mike",
-      "due": "2026-05-01",
-      "done": true
-    },
-    {
       "id": 121,
       "text": "Develop data center knowledge outline (Systems focused)",
       "owner": "Joe",
@@ -133,27 +112,6 @@
       "owner": "Malorie",
       "due": "2026-06-03",
       "done": false
-    },
-    {
-      "id": 132,
-      "text": "Joe to find old documents.",
-      "owner": "",
-      "due": "",
-      "done": true
-    },
-    {
-      "id": 133,
-      "text": "Christine to send Town Hall Invite",
-      "owner": "",
-      "due": "",
-      "done": true
-    },
-    {
-      "id": 134,
-      "text": "Everyone to come up with one word for the core values",
-      "owner": "",
-      "due": "",
-      "done": true
     }
   ],
   "issues": [
@@ -250,7 +208,7 @@
     {
       "id": 2,
       "title": "GACG",
-      "name": "Trent and Cole",
+      "name": "",
       "parentId": null,
       "responsibilities": []
     },
