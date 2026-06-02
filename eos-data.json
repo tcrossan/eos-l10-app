@@ -1,5 +1,5 @@
 {
-  "activeSection": 5,
+  "activeSection": 7,
   "scorecard": [
     {
       "id": 1,
@@ -237,7 +237,7 @@
     {
       "id": 1,
       "title": "VISIONARY",
-      "name": "",
+      "name": "Mike",
       "parentId": null,
       "responsibilities": [
         "Company vision & direction",
@@ -250,7 +250,7 @@
     {
       "id": 2,
       "title": "GACG",
-      "name": "",
+      "name": "Trent and Cole",
       "parentId": null,
       "responsibilities": []
     },
