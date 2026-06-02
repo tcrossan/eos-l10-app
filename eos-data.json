@@ -210,7 +210,9 @@
       "title": "GACG",
       "name": "Trent and Cole",
       "parentId": null,
-      "responsibilities": []
+      "responsibilities": [
+        "ESOP"
+      ]
     },
     {
       "id": 3,
