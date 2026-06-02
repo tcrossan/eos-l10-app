@@ -68,18 +68,12 @@
       "id": 109,
       "text": "Hire Account Manager",
       "owner": "Christine",
-      "onTrack": true
+      "onTrack": false
     },
     {
       "id": 110,
       "text": "Finalize ESOP ",
       "owner": "Trent/Cole",
-      "onTrack": true
-    },
-    {
-      "id": 102,
-      "text": "TEST ROCK",
-      "owner": "",
       "onTrack": true
     }
   ],
@@ -88,28 +82,28 @@
       "id": 115,
       "text": "Christine to send Town Hall Invite for June 10th ",
       "owner": "Christine",
-      "due": "2026-05-01",
-      "done": false
+      "due": "2026-06-03",
+      "done": true
     },
     {
       "id": 116,
       "text": "Create Town Hall Presentation ",
       "owner": "Trent",
-      "due": "2026-05-08",
+      "due": "2026-06-03",
       "done": false
     },
     {
       "id": 117,
       "text": "Monthly News Letter",
       "owner": "Cole",
-      "due": "2026-05-01",
+      "due": "2026-06-03",
       "done": false
     },
     {
       "id": 118,
-      "text": "Jim to Intro Shannon to Christine ",
-      "owner": "Jim",
-      "due": "2026-05-01",
+      "text": "Christine and Malorie to define accounting manager role ",
+      "owner": "christine",
+      "due": "2026-06-03",
       "done": false
     },
     {
@@ -117,27 +111,27 @@
       "text": "Christine to make job discription ",
       "owner": "Christine",
       "due": "2026-05-01",
-      "done": false
+      "done": true
     },
     {
       "id": 120,
       "text": "Everyone come up with at most 5 words for core values ",
       "owner": "Mike",
       "due": "2026-05-01",
-      "done": false
+      "done": true
     },
     {
       "id": 121,
       "text": "Develop data center knowledge outline (Systems focused)",
       "owner": "Joe",
-      "due": "2026-05-01",
+      "due": "2026-06-03",
       "done": false
     },
     {
       "id": 122,
       "text": "Internship Program Outline ",
       "owner": "Malorie",
-      "due": "2026-05-01",
+      "due": "2026-06-03",
       "done": false
     },
     {
@@ -145,21 +139,21 @@
       "text": "Joe to find old documents.",
       "owner": "",
       "due": "",
-      "done": false
+      "done": true
     },
     {
       "id": 133,
       "text": "Christine to send Town Hall Invite",
       "owner": "",
       "due": "",
-      "done": false
+      "done": true
     },
     {
       "id": 134,
       "text": "Everyone to come up with one word for the core values",
       "owner": "",
       "due": "",
-      "done": false
+      "done": true
     }
   ],
   "issues": [
@@ -228,6 +222,14 @@
       "priority": 1,
       "phase": "identify",
       "solution": ""
+    },
+    {
+      "id": 101,
+      "text": "Off Track Rock: Hire Account Manager (Christine)",
+      "priority": 2,
+      "phase": "identify",
+      "solution": "",
+      "sourceRockId": 109
     }
   ],
   "headlines": [
@@ -387,15 +389,15 @@
   "orgCollapsed": [],
   "vto": {
     "coreValues": [
-      "Team -- I got your six -- Selfless -- We're hiring People do not position ",
-      "Do the right thing -- Honesty - trust -- integrity -- Consistent -- Safety",
-      "Ownership -- Self Motivated -- Self starter ",
-      "Adaptable -- Efficient --Grit ",
-      "Curious -- Growth Mind Set "
+      "Adaptability - the ability to stay effective even during uncertainty or difficulty",
+      "Team - Inspiring, collaboration and cooperation",
+      "Ownership - Taking responsibility and being fully committed to a united goal",
+      "Positivity",
+      "Curiosity - having a strong desire to learn, explore and understand"
     ],
     "coreFocus": {
-      "purpose": "",
-      "niche": ""
+      "purpose": "TBD",
+      "niche": "TBD"
     },
     "tenYearTarget": "",
     "marketingStrategy": {
