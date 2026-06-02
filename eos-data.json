@@ -1,5 +1,5 @@
 {
-  "activeSection": 4,
+  "activeSection": 5,
   "scorecard": [
     {
       "id": 1,
@@ -165,14 +165,6 @@
       "solution": ""
     },
     {
-      "id": 124,
-      "text": "Core values ",
-      "priority": 1,
-      "phase": "solve",
-      "solution": "Everyone to come up with one word for the core values",
-      "movedToTodo": true
-    },
-    {
       "id": 125,
       "text": "What is the perfect Construction Team?",
       "priority": 1,
@@ -194,27 +186,11 @@
       "solution": ""
     },
     {
-      "id": 128,
-      "text": "Town hall ",
-      "priority": 1,
-      "phase": "solve",
-      "solution": "Christine to send Town Hall Invite",
-      "movedToTodo": true
-    },
-    {
       "id": 129,
       "text": "CM Program ",
       "priority": 1,
       "phase": "identify",
       "solution": ""
-    },
-    {
-      "id": 130,
-      "text": "Internship Program ",
-      "priority": 1,
-      "phase": "solve",
-      "solution": "Joe to find old documents.",
-      "movedToTodo": true
     },
     {
       "id": 131,
